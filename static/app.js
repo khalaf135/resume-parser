@@ -128,12 +128,20 @@ function handleFileSelect(file) {
 async function uploadAndAnalyze() {
     if (!selectedFile) return;
 
+    // Check if user is logged in
+    if (!isLoggedIn()) {
+        alert('Please login or register first to analyze your resume.');
+        window.location.href = '/login';
+        return;
+    }
+
     const analyzeBtn = document.getElementById('analyzeBtn');
     const btnText = analyzeBtn.querySelector('.btn-text');
     const btnLoading = analyzeBtn.querySelector('.btn-loading');
     const progressSection = document.getElementById('progressSection');
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
+
 
     // Show loading state
     btnText.style.display = 'none';
@@ -174,8 +182,15 @@ async function uploadAndAnalyze() {
 
         if (!response.ok) {
             const error = await response.json();
+            // If authentication failed, redirect to login
+            if (response.status === 401) {
+                alert('Please login to analyze your resume.');
+                window.location.href = '/login';
+                return;
+            }
             throw new Error(error.error || 'Failed to parse resume');
         }
+
 
         const data = await response.json();
 

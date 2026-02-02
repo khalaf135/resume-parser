@@ -315,18 +315,20 @@ def get_current_user():
 
 @app.route('/api/parse', methods=['POST'])
 def parse_resume():
+    # REQUIRE authentication
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return jsonify({"error": "Authentication required. Please login first."}), 401
+    
+    access_token = auth_header.split(' ')[1]
+    
     if 'file' not in request.files:
         return jsonify({"error": "No file provided"}), 400
     
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
-    
-    # Get optional auth token
-    auth_header = request.headers.get('Authorization')
-    access_token = None
-    if auth_header and auth_header.startswith('Bearer '):
-        access_token = auth_header.split(' ')[1]
+
     
     try:
         pdf_bytes = file.read()
@@ -348,48 +350,48 @@ def parse_resume():
             "raw_text": raw_text
         }
         
-        # Save to database if user is authenticated
+        # Save to database (user is authenticated)
         cv_id = None
-        if access_token:
-            try:
-                # Create authenticated client
-                user_client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-                user_client.auth.set_session(access_token, access_token)
-                user = user_client.auth.get_user(access_token)
+        try:
+            # Create authenticated client
+            user_client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+            user_client.auth.set_session(access_token, access_token)
+            user = user_client.auth.get_user(access_token)
+            
+            if user and user.user:
+                # 1. Upload file to storage
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                safe_filename = "".join([c for c in file.filename if c.isalnum() or c in "._- "]).strip()
+                file_path = f"{user.user.id}/{timestamp}_{safe_filename}"
                 
-                if user and user.user:
-                    # 1. Upload file to storage
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    safe_filename = "".join([c for c in file.filename if c.isalnum() or c in "._- "]).strip()
-                    file_path = f"{user.user.id}/{timestamp}_{safe_filename}"
-                    
-                    try:
-                        # Reset file pointer to beginning for upload
-                        file.seek(0)
-                        upload_data = file.read()
-                        user_client.storage.from_('resumes').upload(
-                            path=file_path,
-                            file=upload_data,
-                            file_options={"content-type": "application/pdf"}
-                        )
-                    except Exception as upload_error:
-                        print(f"Storage upload error: {upload_error}")
-                        # Continue even if upload fails, but file_path will be null
-                        file_path = None
+                try:
+                    # Reset file pointer to beginning for upload
+                    file.seek(0)
+                    upload_data = file.read()
+                    user_client.storage.from_('resumes').upload(
+                        path=file_path,
+                        file=upload_data,
+                        file_options={"content-type": "application/pdf"}
+                    )
+                except Exception as upload_error:
+                    print(f"Storage upload error: {upload_error}")
+                    # Continue even if upload fails, but file_path will be null
+                    file_path = None
 
-                    # 2. Insert into database
-                    result = user_client.table('cvs').insert({
-                        "user_id": user.user.id,
-                        "filename": file.filename,
-                        "resume_data": resume_data,
-                        "score_data": score_data,
-                        "file_path": file_path
-                    }).execute()
-                    
-                    if result.data:
-                        cv_id = result.data[0]['id']
-            except Exception as db_error:
-                print(f"Database/Storage error: {db_error}")
+                # 2. Insert into database
+                result = user_client.table('cvs').insert({
+                    "user_id": user.user.id,
+                    "filename": file.filename,
+                    "resume_data": resume_data,
+                    "score_data": score_data,
+                    "file_path": file_path
+                }).execute()
+                
+                if result.data:
+                    cv_id = result.data[0]['id']
+        except Exception as db_error:
+            print(f"Database/Storage error: {db_error}")
+
         
         return jsonify({
             "success": True,
