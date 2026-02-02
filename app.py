@@ -4,6 +4,8 @@ import base64
 import os
 from mistralai import Mistral
 from supabase import create_client, Client
+from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -356,17 +358,38 @@ def parse_resume():
                 user = user_client.auth.get_user(access_token)
                 
                 if user and user.user:
+                    # 1. Upload file to storage
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    safe_filename = "".join([c for c in file.filename if c.isalnum() or c in "._- "]).strip()
+                    file_path = f"{user.user.id}/{timestamp}_{safe_filename}"
+                    
+                    try:
+                        # Reset file pointer to beginning for upload
+                        file.seek(0)
+                        upload_data = file.read()
+                        user_client.storage.from_('resumes').upload(
+                            path=file_path,
+                            file=upload_data,
+                            file_options={"content-type": "application/pdf"}
+                        )
+                    except Exception as upload_error:
+                        print(f"Storage upload error: {upload_error}")
+                        # Continue even if upload fails, but file_path will be null
+                        file_path = None
+
+                    # 2. Insert into database
                     result = user_client.table('cvs').insert({
                         "user_id": user.user.id,
                         "filename": file.filename,
                         "resume_data": resume_data,
-                        "score_data": score_data
+                        "score_data": score_data,
+                        "file_path": file_path
                     }).execute()
                     
                     if result.data:
                         cv_id = result.data[0]['id']
             except Exception as db_error:
-                print(f"Database save error: {db_error}")
+                print(f"Database/Storage error: {db_error}")
         
         return jsonify({
             "success": True,
@@ -375,6 +398,7 @@ def parse_resume():
             "resume_data": resume_data,
             "score_data": score_data
         })
+
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -432,6 +456,18 @@ def get_cv(cv_id):
         result = user_client.table('cvs').select('*').eq('id', cv_id).single().execute()
         
         if result.data:
+            # Generate signed URL for the PDF if it exists
+            pdf_url = None
+            if result.data.get('file_path'):
+                try:
+                    url_response = user_client.storage.from_('resumes').create_signed_url(
+                        result.data['file_path'], 
+                        3600 # 1 hour expiry
+                    )
+                    pdf_url = url_response.get('signedURL')
+                except Exception as e:
+                    print(f"Error generating signed URL: {e}")
+
             return jsonify({
                 "success": True,
                 "cv": {
@@ -439,9 +475,11 @@ def get_cv(cv_id):
                     "filename": result.data['filename'],
                     "resume_data": result.data['resume_data'],
                     "score_data": result.data['score_data'],
-                    "created_at": result.data['created_at']
+                    "created_at": result.data['created_at'],
+                    "pdf_url": pdf_url
                 }
             })
+
         else:
             return jsonify({"error": "CV not found"}), 404
         
