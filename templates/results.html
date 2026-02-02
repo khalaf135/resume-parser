@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analysis Results</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container results-page">
+        <header>
+            <a href="/" class="back-link">← Back to Upload</a>
+            <h1 class="gradient-text">📊 Analysis Results</h1>
+        </header>
+
+        <main id="resultsContent">
+            <!-- Score Overview -->
+            <section class="score-overview">
+                <div class="total-score-card">
+                    <div class="score-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="score-bg" cx="50" cy="50" r="45" />
+                            <circle class="score-fill" cx="50" cy="50" r="45" id="scoreFill" />
+                        </svg>
+                        <div class="score-value" id="totalScore">--</div>
+                    </div>
+                    <h2>Overall Score</h2>
+                    <p class="score-label" id="overallFeedback">Loading...</p>
+                </div>
+
+                <div class="category-scores">
+                    <div class="category-card" id="contentQuality">
+                        <div class="category-header">
+                            <span class="category-icon">📝</span>
+                            <span class="category-name">Content Quality</span>
+                            <span class="category-score">--/25</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-fill"></div>
+                        </div>
+                        <p class="category-feedback">Loading...</p>
+                    </div>
+                    <div class="category-card" id="skillsRelevance">
+                        <div class="category-header">
+                            <span class="category-icon">🛠️</span>
+                            <span class="category-name">Skills Relevance</span>
+                            <span class="category-score">--/25</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-fill"></div>
+                        </div>
+                        <p class="category-feedback">Loading...</p>
+                    </div>
+                    <div class="category-card" id="experienceClarity">
+                        <div class="category-header">
+                            <span class="category-icon">💼</span>
+                            <span class="category-name">Experience Clarity</span>
+                            <span class="category-score">--/25</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-fill"></div>
+                        </div>
+                        <p class="category-feedback">Loading...</p>
+                    </div>
+                    <div class="category-card" id="formattingStructure">
+                        <div class="category-header">
+                            <span class="category-icon">📋</span>
+                            <span class="category-name">Formatting</span>
+                            <span class="category-score">--/25</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-fill"></div>
+                        </div>
+                        <p class="category-feedback">Loading...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Strengths & Improvements -->
+            <section class="feedback-section">
+                <div class="strengths-card">
+                    <h3>✅ Strengths</h3>
+                    <ul id="strengthsList"></ul>
+                </div>
+                <div class="improvements-card">
+                    <h3>💡 Improvements</h3>
+                    <div id="improvementsList"></div>
+                </div>
+            </section>
+
+            <!-- Resume Data -->
+            <section class="resume-data-section">
+                <div class="section-header">
+                    <h2>📄 Extracted Resume Data</h2>
+                    <button class="btn-secondary" id="downloadJson">📥 Download JSON</button>
+                </div>
+
+                <div class="resume-grid">
+                    <div class="info-card" id="personalInfo">
+                        <h3>👤 Personal Info</h3>
+                        <div class="info-content"></div>
+                    </div>
+                    <div class="info-card" id="summaryInfo">
+                        <h3>📝 Summary</h3>
+                        <div class="info-content"></div>
+                    </div>
+                    <div class="info-card wide" id="experienceInfo">
+                        <h3>💼 Experience</h3>
+                        <div class="info-content"></div>
+                    </div>
+                    <div class="info-card" id="educationInfo">
+                        <h3>🎓 Education</h3>
+                        <div class="info-content"></div>
+                    </div>
+                    <div class="info-card" id="skillsInfo">
+                        <h3>🛠️ Skills</h3>
+                        <div class="info-content"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz CTA -->
+            <section class="quiz-cta">
+                <div class="quiz-cta-content">
+                    <h2>🎯 Test Your Resume Knowledge</h2>
+                    <p>Take a quick quiz to verify you actually know what's on your resume</p>
+                    <button class="btn-primary btn-large" id="startQuizBtn">Start Quiz →</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadResults();
+        });
+    </script>
+</body>
+
+</html>

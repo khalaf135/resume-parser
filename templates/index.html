@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Parser - AI Powered</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1 class="gradient-text">📄 AI Resume Parser</h1>
+                <div class="auth-controls" id="authControls">
+                    <a href="/login" class="btn-secondary" id="loginBtn">Login</a>
+                    <a href="/login#register" class="btn-primary-small" id="registerBtn">Register</a>
+                </div>
+            </div>
+            <p class="subtitle">Upload your resume for instant AI-powered analysis, scoring & quiz</p>
+        </header>
+
+
+        <main>
+            <div class="upload-section">
+                <div class="upload-box" id="uploadBox">
+                    <div class="upload-icon">📤</div>
+                    <h2>Drop your PDF here</h2>
+                    <p>or click to browse</p>
+                    <input type="file" id="fileInput" accept=".pdf" hidden>
+                </div>
+
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <span class="file-icon">📎</span>
+                    <span class="file-name" id="fileName"></span>
+                    <button class="remove-file" id="removeFile">✕</button>
+                </div>
+
+                <button class="btn-primary" id="analyzeBtn" disabled>
+                    <span class="btn-text">🔍 Analyze Resume</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner"></span> Processing...
+                    </span>
+                </button>
+            </div>
+
+            <div class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Initializing...</p>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>OCR Extraction</h3>
+                    <p>Mistral OCR extracts all text from your PDF</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Scoring</h3>
+                    <p>Get a detailed score out of 100 with feedback</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Quiz</h3>
+                    <p>Test your knowledge with AI-generated questions</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Mistral AI • Local Processing</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Quiz</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container quiz-page">
+        <header>
+            <a href="/results" class="back-link">← Back to Results</a>
+            <h1 class="gradient-text">🎯 Resume Knowledge Quiz</h1>
+        </header>
+
+        <main>
+            <!-- Loading State -->
+            <div class="quiz-loading" id="quizLoading">
+                <div class="spinner large"></div>
+                <p>Generating questions from your resume...</p>
+            </div>
+
+            <!-- Quiz Container -->
+            <div class="quiz-container" id="quizContainer" style="display: none;">
+                <div class="quiz-progress">
+                    <div class="quiz-progress-bar">
+                        <div class="quiz-progress-fill" id="quizProgressFill"></div>
+                    </div>
+                    <span class="quiz-progress-text" id="quizProgressText">Question 1 of 7</span>
+                </div>
+
+                <div class="question-card" id="questionCard">
+                    <div class="question-number" id="questionNumber">Q1</div>
+                    <h2 class="question-text" id="questionText">Loading question...</h2>
+
+                    <div class="options-container" id="optionsContainer">
+                        <!-- Options will be dynamically inserted -->
+                    </div>
+
+                    <div class="quiz-actions">
+                        <button class="btn-secondary" id="prevBtn" disabled>← Previous</button>
+                        <button class="btn-primary" id="nextBtn" disabled>Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Results -->
+            <div class="quiz-results" id="quizResults" style="display: none;">
+                <div class="quiz-score-card">
+                    <div class="quiz-score-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="score-bg" cx="50" cy="50" r="45" />
+                            <circle class="score-fill" cx="50" cy="50" r="45" id="quizScoreFill" />
+                        </svg>
+                        <div class="quiz-score-value" id="quizScoreValue">--</div>
+                    </div>
+                    <h2 id="quizScoreTitle">Quiz Complete!</h2>
+                    <p id="quizScoreSummary">You got -- out of -- correct</p>
+                </div>
+
+                <div class="quiz-answers-review" id="answersReview">
+                    <!-- Answers will be inserted here -->
+                </div>
+
+                <div class="quiz-actions-final">
+                    <a href="/results" class="btn-secondary">← Back to Results</a>
+                    <button class="btn-primary" id="retakeQuizBtn">🔄 Retake Quiz</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initQuiz();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,4 @@
+flask>=2.3.0
+mistralai>=1.0.0
+supabase>=1.0.0
+gunicorn>=21.0.0
