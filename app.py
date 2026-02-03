@@ -550,8 +550,8 @@ def get_user_profile(user_id):
         # Get target user's verified certificates
         certs_result = user_client.table('certificates').select('*').eq('user_id', user_id).eq('status', 'verified').execute()
         
-        # Get target user's primary CV
-        cv_result = user_client.table('cvs').select('*').eq('user_id', user_id).eq('is_primary', True).execute()
+        # Get target user's primary CV (just get first CV if is_primary doesn't exist)
+        cv_result = user_client.table('cvs').select('*').eq('user_id', user_id).order('created_at', desc=True).limit(1).execute()
         
         return jsonify({
             "success": True,
@@ -838,19 +838,13 @@ def parse_resume():
                     # Continue even if upload fails, but file_path will be null
                     file_path = None
 
-                # Check if user has any CVs already
-                existing_cvs = user_client.table('cvs').select('id').eq('user_id', user.user.id).execute()
-                is_first_cv = len(existing_cvs.data) == 0
-
-                # 2. Insert into database
+                # 2. Insert into database (only use columns that exist)
                 result = user_client.table('cvs').insert({
                     "user_id": user.user.id,
                     "filename": file.filename,
-                    "title": cv_title,
                     "resume_data": resume_data,
                     "score_data": score_data,
-                    "file_path": file_path,
-                    "is_primary": is_first_cv  # First CV is automatically primary
+                    "file_path": file_path
                 }).execute()
                 
                 if result.data:
@@ -888,7 +882,8 @@ def list_cvs():
         if not user or not user.user:
             return jsonify({"error": "Invalid token"}), 401
         
-        result = user_client.table('cvs').select('id, filename, title, created_at, score_data, is_primary, tags').order('created_at', desc=True).execute()
+        # Select only columns that are guaranteed to exist
+        result = user_client.table('cvs').select('id, filename, created_at, score_data').eq('user_id', user.user.id).order('created_at', desc=True).execute()
         
         cvs = []
         for cv in result.data:
@@ -897,7 +892,7 @@ def list_cvs():
                 "filename": cv['filename'],
                 "title": cv.get('title', cv['filename']),
                 "created_at": cv['created_at'],
-                "score": cv['score_data'].get('total_score') if cv['score_data'] else None,
+                "score": cv['score_data'].get('total_score') if cv.get('score_data') else None,
                 "is_primary": cv.get('is_primary', False),
                 "tags": cv.get('tags', [])
             })
@@ -905,6 +900,7 @@ def list_cvs():
         return jsonify({"success": True, "cvs": cvs})
         
     except Exception as e:
+        print(f"list_cvs error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/cvs/<cv_id>', methods=['GET'])
