@@ -1031,6 +1031,8 @@ def search_candidates():
         # Build query for candidates
         query = user_client.table('candidate_profiles').select('*')
         
+        print(f"DEBUG: Search filters - Major: {major}, Location: {location}, GradYear: {graduation_year}, Exp: {experience}, Skills: {skills}, MinScore: {min_skill_score}")
+
         if major:
             query = query.ilike('major_specialization', f'%{major}%')
         if location:
@@ -1043,20 +1045,27 @@ def search_candidates():
             query = query.eq('years_of_experience', experience)
         
         candidates_result = query.execute()
-        print(f"DEBUG: Found {len(candidates_result.data)} raw candidate profiles")
+        print(f"DEBUG: Found {len(candidates_result.data)} raw candidate profiles matching basic filters")
         
         # Enhance with skills data
         candidates = []
         for candidate in candidates_result.data:
             # Get skills for this candidate
             skills_result = user_client.table('skills').select('*').eq('user_id', candidate['user_id']).execute()
-            
             candidate_skills = skills_result.data
             
+            print(f"DEBUG: Candidate {candidate['user_id']} has {len(candidate_skills)} skills")
+
             # Filter by skills if specified
             if skills:
-                candidate_skill_names = [s['skill_name'].lower() for s in candidate_skills]
-                if not any(skill.lower() in candidate_skill_names for skill in skills):
+                candidate_skill_names = [s['skill_name'].lower().strip() for s in candidate_skills]
+                match = False
+                for s_filter in skills:
+                    if s_filter.lower().strip() in candidate_skill_names:
+                        match = True
+                        break
+                if not match:
+                    print(f"DEBUG: Candidate {candidate['user_id']} filtered out due to skill mismatch")
                     continue
             
             # Calculate average verified skill score
@@ -1064,6 +1073,7 @@ def search_candidates():
             avg_score = sum(s['score'] for s in verified_skills) / len(verified_skills) if verified_skills else 0
             
             if avg_score < min_skill_score:
+                print(f"DEBUG: Candidate {candidate['user_id']} filtered out due to low score: {avg_score} < {min_skill_score}")
                 continue
             
             candidates.append({
