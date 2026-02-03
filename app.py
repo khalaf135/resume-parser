@@ -540,7 +540,7 @@ def update_profile():
         
         print(f"DEBUG: Upserting to {table} for user {user.id}. Data: {profile_data}")
         
-        result = user_client.table(table).upsert(profile_data, on='user_id').execute()
+        result = user_client.table(table).upsert(profile_data, on_conflict='user_id').execute()
         
         print(f"DEBUG: Upsert result: {result.data}")
         
