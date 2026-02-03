@@ -1,3 +1,7 @@
+from flask import Flask, request, jsonify, render_template, send_from_directory
+import json
+import base64
+import os
 from datetime import datetime
 from supabase import create_client, Client
 import ocr_service
