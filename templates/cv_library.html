@@ -56,7 +56,7 @@
                     <p>Manage and upload your CVs</p>
                 </div>
                 <div class="top-bar-actions">
-                    <button class="btn-primary" onclick="openUploadModal()">+ Upload CV</button>
+                    <button class="btn-primary" id="openUploadBtn">+ Upload CV</button>
                     <button class="btn-secondary" onclick="logout()">Logout</button>
                 </div>
             </header>
@@ -71,37 +71,36 @@
 
     <!-- Upload CV Modal -->
     <div class="modal-overlay" id="uploadModal">
-        <div class="modal">
+        <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3>Upload CV</h3>
-                <button class="modal-close" onclick="closeUploadModal()">×</button>
+                <button class="modal-close" id="closeModalBtn">×</button>
             </div>
-            <form onsubmit="uploadCV(event)">
-                <div class="form-group">
-                    <label for="cvTitle">CV Title</label>
-                    <input type="text" id="cvTitle" placeholder="e.g., Software Engineer - 2024">
+            <div class="form-group">
+                <label for="cvTitle">CV Title (optional)</label>
+                <input type="text" id="cvTitle" placeholder="e.g., Software Engineer - 2024">
+            </div>
+            <div class="form-group">
+                <label>PDF File *</label>
+                <div class="file-upload-zone" id="dropZone">
+                    <div class="upload-icon">📄</div>
+                    <p>Drag and drop your PDF here</p>
+                    <button type="button" class="btn-secondary" id="browseBtn">Browse Files</button>
+                    <input type="file" id="cvFile" accept=".pdf" hidden>
+                    <p class="file-name" id="fileName"></p>
                 </div>
-                <div class="form-group">
-                    <label>PDF File *</label>
-                    <div class="file-upload-zone" id="dropZone">
-                        <input type="file" id="cvFile" accept=".pdf" required hidden>
-                        <div class="upload-icon">📄</div>
-                        <p>Drag and drop your PDF here or <span class="link-btn"
-                                onclick="document.getElementById('cvFile').click()">browse</span></p>
-                        <p class="file-name" id="fileName"></p>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
-                    <button type="submit" class="btn-primary" id="uploadBtn">Upload & Analyze</button>
-                </div>
-            </form>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                <button type="button" class="btn-primary" id="uploadBtn">Upload & Analyze</button>
+            </div>
+            <div id="uploadStatus" style="display:none; margin-top: 16px; text-align: center;"></div>
         </div>
     </div>
 
     <!-- CV Details Modal -->
     <div class="modal-overlay" id="cvDetailsModal">
-        <div class="modal modal-large">
+        <div class="modal modal-large" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3 id="cvDetailsTitle">CV Details</h3>
                 <button class="modal-close" onclick="closeCvDetailsModal()">×</button>
@@ -115,23 +114,61 @@
     <script src="/static/app.js"></script>
     <script>
         // Check authentication
-        if (!localStorage.getItem('access_token')) {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
             window.location.href = '/login';
         }
 
-        // File drag and drop
-        const dropZone = document.getElementById('dropZone');
+        // DOM Elements
+        const uploadModal = document.getElementById('uploadModal');
+        const openUploadBtn = document.getElementById('openUploadBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const browseBtn = document.getElementById('browseBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
         const fileInput = document.getElementById('cvFile');
+        const dropZone = document.getElementById('dropZone');
         const fileName = document.getElementById('fileName');
+        const uploadStatus = document.getElementById('uploadStatus');
 
-        // Only trigger file input when clicking the dropzone area, not the form buttons
-        dropZone.addEventListener('click', (e) => {
-            // Prevent triggering file input if clicking inside form-actions
-            if (!e.target.closest('.form-actions')) {
-                fileInput.click();
+        // Open modal
+        openUploadBtn.addEventListener('click', () => {
+            uploadModal.classList.add('active');
+        });
+
+        // Close modal
+        function closeModal() {
+            uploadModal.classList.remove('active');
+            document.getElementById('cvTitle').value = '';
+            fileInput.value = '';
+            fileName.textContent = '';
+            uploadStatus.style.display = 'none';
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Upload & Analyze';
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        uploadModal.addEventListener('click', (e) => {
+            if (e.target === uploadModal) closeModal();
+        });
+
+        // Browse button opens file picker
+        browseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            fileInput.click();
+        });
+
+        // File input change
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files[0]) {
+                fileName.textContent = '✓ ' + fileInput.files[0].name;
+                fileName.style.color = '#10b981';
             }
         });
 
+        // Drag and drop
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('dragover');
@@ -147,15 +184,60 @@
             const file = e.dataTransfer.files[0];
             if (file && file.type === 'application/pdf') {
                 fileInput.files = e.dataTransfer.files;
-                fileName.textContent = file.name;
-            } else if (file) {
+                fileName.textContent = '✓ ' + file.name;
+                fileName.style.color = '#10b981';
+            } else {
                 alert('Please upload a PDF file only.');
             }
         });
 
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files[0]) {
-                fileName.textContent = fileInput.files[0].name;
+        // Upload CV
+        uploadBtn.addEventListener('click', async () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a PDF file first.');
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Analyzing...';
+            uploadStatus.style.display = 'block';
+            uploadStatus.innerHTML = '<span style="color: #a78bfa;">⏳ Analyzing your CV with AI... This may take 30-60 seconds.</span>';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', document.getElementById('cvTitle').value || file.name);
+
+            try {
+                const response = await fetch('/api/parse', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    uploadStatus.innerHTML = '<span style="color: #10b981;">✓ CV analyzed successfully!</span>';
+                    setTimeout(() => {
+                        closeModal();
+                        loadCVs();
+                        if (data.cv_id) {
+                            viewCV(data.cv_id);
+                        }
+                    }, 1000);
+                } else {
+                    uploadStatus.innerHTML = `<span style="color: #ef4444;">✗ Error: ${data.error || 'Upload failed'}</span>`;
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = 'Retry Upload';
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                uploadStatus.innerHTML = '<span style="color: #ef4444;">✗ Network error. Please try again.</span>';
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Retry Upload';
             }
         });
 
@@ -163,12 +245,24 @@
         async function loadCVs() {
             try {
                 const response = await fetch('/api/cvs', {
-                    headers: getAuthHeaders()
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
+
+                if (response.status === 401) {
+                    // Token expired, redirect to login
+                    localStorage.removeItem('access_token');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 const data = await response.json();
 
                 if (data.success) {
                     renderCVs(data.cvs);
+                } else {
+                    console.error('Error loading CVs:', data.error);
                 }
             } catch (error) {
                 console.error('Error loading CVs:', error);
@@ -196,81 +290,10 @@
                     </div>
                     <div class="cv-actions">
                         <button class="btn-sm btn-secondary" onclick="viewCV('${cv.id}')">View Details</button>
-                        ${!cv.is_primary ? `<button class="btn-sm btn-primary" onclick="setPrimary('${cv.id}')">Set as Primary</button>` : ''}
                         <button class="btn-sm btn-danger" onclick="deleteCV('${cv.id}')">Delete</button>
                     </div>
                 </div>
             `).join('');
-        }
-
-        function openUploadModal() {
-            document.getElementById('uploadModal').classList.add('active');
-        }
-
-        function closeUploadModal() {
-            document.getElementById('uploadModal').classList.remove('active');
-            document.getElementById('cvTitle').value = '';
-            document.getElementById('cvFile').value = '';
-            document.getElementById('fileName').textContent = '';
-        }
-
-        let isUploading = false;
-
-        async function uploadCV(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            // Prevent double submission
-            if (isUploading) {
-                console.log('Upload already in progress');
-                return;
-            }
-
-            const file = fileInput.files[0];
-            if (!file) {
-                alert('Please select a PDF file first.');
-                return;
-            }
-
-            const btn = document.getElementById('uploadBtn');
-            isUploading = true;
-            btn.disabled = true;
-            btn.textContent = 'Analyzing...';
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('title', document.getElementById('cvTitle').value || file.name);
-
-            try {
-                const token = localStorage.getItem('access_token');
-                const response = await fetch('/api/parse', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    closeUploadModal();
-                    loadCVs();
-                    // Optionally show the results
-                    if (data.cv_id) {
-                        setTimeout(() => viewCV(data.cv_id), 500);
-                    }
-                } else {
-                    alert('Error: ' + (data.error || 'Upload failed'));
-                }
-            } catch (error) {
-                console.error('Upload error:', error);
-                alert('Network error. Please try again.');
-            } finally {
-                isUploading = false;
-                btn.disabled = false;
-                btn.textContent = 'Upload & Analyze';
-            }
         }
 
         async function viewCV(cvId) {
@@ -280,7 +303,9 @@
 
             try {
                 const response = await fetch(`/api/cvs/${cvId}`, {
-                    headers: getAuthHeaders()
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 const data = await response.json();
 
@@ -345,28 +370,15 @@
             document.getElementById('cvDetailsModal').classList.remove('active');
         }
 
-        async function setPrimary(cvId) {
-            try {
-                const response = await fetch(`/api/cvs/${cvId}/primary`, {
-                    method: 'PUT',
-                    headers: getAuthHeaders()
-                });
-
-                if (response.ok) {
-                    loadCVs();
-                }
-            } catch (error) {
-                alert('Error setting primary CV');
-            }
-        }
-
         async function deleteCV(cvId) {
             if (!confirm('Are you sure you want to delete this CV?')) return;
 
             try {
                 const response = await fetch(`/api/cvs/${cvId}`, {
                     method: 'DELETE',
-                    headers: getAuthHeaders()
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
                 if (response.ok) {
@@ -377,6 +389,7 @@
             }
         }
 
+        // Load CVs on page load
         loadCVs();
     </script>
 </body>
