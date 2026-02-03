@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Candidates - Jadeer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar employer-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🏢</span>
+                    <span class="logo-text">Jadeer</span>
+                </div>
+                <span class="role-badge">Employer</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/employer/dashboard" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/employer/search" class="nav-item active">
+                    <span class="nav-icon">🔍</span>
+                    <span>Find Candidates</span>
+                </a>
+                <a href="#" class="nav-item disabled">
+                    <span class="nav-icon">💬</span>
+                    <span>Chats</span>
+                    <span class="coming-soon">Soon</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h1>Find Candidates</h1>
+                    <p>Search and filter candidates based on your requirements</p>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <div class="search-layout">
+                <!-- Filters Sidebar -->
+                <aside class="filters-panel">
+                    <h3>🔍 Filters</h3>
+                    <form onsubmit="searchCandidates(event)">
+                        <div class="filter-group">
+                            <label>Major / Specialization</label>
+                            <select id="filterMajor">
+                                <option value="">All Majors</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Software Engineering">Software Engineering</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Business Administration">Business Administration</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Finance">Finance</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Graduation Year</label>
+                            <select id="filterGradYear">
+                                <option value="">Any Year</option>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020 or earlier</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Location</label>
+                            <input type="text" id="filterLocation" placeholder="e.g., Riyadh">
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Experience Level</label>
+                            <select id="filterExperience">
+                                <option value="">Any Experience</option>
+                                <option value="Fresh Graduate">Fresh Graduate</option>
+                                <option value="0-1 years">0-1 years</option>
+                                <option value="1-3 years">1-3 years</option>
+                                <option value="3-5 years">3-5 years</option>
+                                <option value="5-10 years">5-10 years</option>
+                                <option value="10+ years">10+ years</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Skills (comma-separated)</label>
+                            <input type="text" id="filterSkills" placeholder="e.g., Python, React">
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Minimum Skill Score</label>
+                            <input type="range" id="filterMinScore" min="0" max="100" value="0">
+                            <span class="range-value" id="minScoreValue">0%</span>
+                        </div>
+
+                        <button type="submit" class="btn-primary btn-full">Search</button>
+                        <button type="button" class="btn-secondary btn-full" onclick="clearFilters()">Clear
+                            Filters</button>
+                    </form>
+                </aside>
+
+                <!-- Results -->
+                <div class="search-results">
+                    <div class="results-header">
+                        <span id="resultsCount">0 candidates found</span>
+                    </div>
+                    <div class="candidates-grid" id="candidatesGrid">
+                        <p class="empty-state">Use the filters to search for candidates</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- View Candidate Modal -->
+    <div class="modal-overlay" id="candidateModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h3 id="candidateModalTitle">Candidate Profile</h3>
+                <button class="modal-close" onclick="closeCandidateModal()">×</button>
+            </div>
+            <div id="candidateModalContent">
+                <!-- Candidate details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Check authentication
+        if (!localStorage.getItem('access_token')) {
+            window.location.href = '/login';
+        }
+
+        // Check role
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.role !== 'employer') {
+            window.location.href = '/dashboard';
+        }
+
+        // Range slider value display
+        document.getElementById('filterMinScore').addEventListener('input', function () {
+            document.getElementById('minScoreValue').textContent = this.value + '%';
+        });
+
+        async function searchCandidates(e) {
+            if (e) e.preventDefault();
+
+            const params = new URLSearchParams();
+
+            const major = document.getElementById('filterMajor').value;
+            const gradYear = document.getElementById('filterGradYear').value;
+            const location = document.getElementById('filterLocation').value;
+            const experience = document.getElementById('filterExperience').value;
+            const skills = document.getElementById('filterSkills').value;
+            const minScore = document.getElementById('filterMinScore').value;
+
+            if (major) params.append('major', major);
+            if (gradYear) params.append('graduation_year', gradYear);
+            if (location) params.append('location', location);
+            if (experience) params.append('experience', experience);
+            if (minScore > 0) params.append('min_skill_score', minScore);
+
+            if (skills) {
+                skills.split(',').forEach(s => {
+                    if (s.trim()) params.append('skills', s.trim());
+                });
+            }
+
+            document.getElementById('candidatesGrid').innerHTML = '<div class="loading">Searching...</div>';
+
+            try {
+                const response = await fetch(`/api/candidates?${params.toString()}`, {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderCandidates(data.candidates);
+                } else {
+                    document.getElementById('candidatesGrid').innerHTML =
+                        `<p class="error">${data.error}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('candidatesGrid').innerHTML =
+                    '<p class="error">Network error. Please try again.</p>';
+            }
+        }
+
+        function renderCandidates(candidates) {
+            document.getElementById('resultsCount').textContent =
+                `${candidates.length} candidate${candidates.length !== 1 ? 's' : ''} found`;
+
+            if (!candidates || candidates.length === 0) {
+                document.getElementById('candidatesGrid').innerHTML =
+                    '<p class="empty-state">No candidates match your criteria. Try adjusting the filters.</p>';
+                return;
+            }
+
+            document.getElementById('candidatesGrid').innerHTML = candidates.map(candidate => `
+                <div class="candidate-card">
+                    <div class="candidate-avatar">
+                        ${getInitials(candidate.full_name)}
+                    </div>
+                    <div class="candidate-info">
+                        <h3>${candidate.full_name}</h3>
+                        <p class="headline">${candidate.professional_headline || 'No headline'}</p>
+                        <p class="location">📍 ${candidate.location || 'Location not specified'}</p>
+                        <p class="experience">💼 ${candidate.years_of_experience || 'Experience not specified'}</p>
+                        ${candidate.skills && candidate.skills.length > 0 ? `
+                            <div class="candidate-skills">
+                                ${candidate.skills.slice(0, 3).map(s => `
+                                    <span class="skill-badge ${s.is_verified ? 'verified' : ''}">
+                                        ${s.skill_name}
+                                        ${s.is_verified ? '✓' : ''}
+                                    </span>
+                                `).join('')}
+                                ${candidate.skills.length > 3 ? `<span class="skill-badge more">+${candidate.skills.length - 3}</span>` : ''}
+                            </div>
+                        ` : ''}
+                        ${candidate.average_score > 0 ? `
+                            <div class="candidate-score">
+                                <span class="score-label">Avg. Skill Score:</span>
+                                <span class="score-value">${candidate.average_score}%</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="candidate-actions">
+                        <button class="btn-primary" onclick="viewCandidate('${candidate.user_id}')">View Profile</button>
+                        <button class="btn-secondary btn-chat" onclick="startChat('${candidate.user_id}')" title="Coming Soon">
+                            💬 Chat
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getInitials(name) {
+            if (!name) return '?';
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        async function viewCandidate(userId) {
+            document.getElementById('candidateModalTitle').textContent = 'Loading...';
+            document.getElementById('candidateModalContent').innerHTML = '<div class="loading">Loading profile...</div>';
+            document.getElementById('candidateModal').classList.add('active');
+
+            try {
+                const response = await fetch(`/api/profile/${userId}`, {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const profile = data.profile || {};
+                    const skills = data.skills || [];
+                    const certs = data.certificates || [];
+                    const cv = data.primary_cv;
+
+                    document.getElementById('candidateModalTitle').textContent = profile.full_name || 'Candidate';
+
+                    document.getElementById('candidateModalContent').innerHTML = `
+                        <div class="candidate-profile-view">
+                            <div class="profile-header-view">
+                                <div class="avatar-large">${getInitials(profile.full_name)}</div>
+                                <div class="profile-main">
+                                    <h2>${profile.full_name || 'Anonymous'}</h2>
+                                    <p class="headline">${profile.professional_headline || ''}</p>
+                                    <p class="location">📍 ${profile.location || 'Location not set'}</p>
+                                </div>
+                            </div>
+
+                            <div class="profile-details-view">
+                                <div class="detail-row">
+                                    <span class="detail-label">📱 Phone</span>
+                                    <span class="detail-value">${profile.phone || '-'}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">🎓 Major</span>
+                                    <span class="detail-value">${profile.major_specialization || '-'}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">📅 Graduation Year</span>
+                                    <span class="detail-value">${profile.graduation_year || '-'}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">💼 Experience</span>
+                                    <span class="detail-value">${profile.years_of_experience || '-'}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">🏢 Preferred Job Type</span>
+                                    <span class="detail-value">${profile.preferred_job_type || '-'}</span>
+                                </div>
+                            </div>
+
+                            ${profile.bio ? `
+                                <div class="profile-section">
+                                    <h4>About</h4>
+                                    <p>${profile.bio}</p>
+                                </div>
+                            ` : ''}
+
+                            ${skills.length > 0 ? `
+                                <div class="profile-section">
+                                    <h4>Skills</h4>
+                                    <div class="skills-list-view">
+                                        ${skills.map(s => `
+                                            <div class="skill-item-view ${s.is_verified ? 'verified' : ''}">
+                                                <span class="skill-name">${s.skill_name}</span>
+                                                ${s.is_verified ? `<span class="verified-tag">✓ Verified (${s.score}%)</span>` : ''}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+
+                            ${certs.length > 0 ? `
+                                <div class="profile-section">
+                                    <h4>Certificates</h4>
+                                    <ul class="certs-list-view">
+                                        ${certs.map(c => `<li>${c.certificate_name} - ${c.issuing_organization || 'Unknown'}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+
+                            ${cv ? `
+                                <div class="profile-section">
+                                    <h4>Primary CV</h4>
+                                    <p>${cv.title || cv.filename}</p>
+                                    ${cv.score_data ? `<p>CV Score: <strong>${cv.score_data.total_score}/100</strong></p>` : ''}
+                                </div>
+                            ` : ''}
+
+                            <div class="modal-actions">
+                                <button class="btn-secondary btn-chat" onclick="startChat('${userId}')">💬 Start Chat</button>
+                                <button class="btn-secondary" onclick="closeCandidateModal()">Close</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('candidateModalContent').innerHTML =
+                        `<p class="error">${data.error}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('candidateModalContent').innerHTML =
+                    '<p class="error">Error loading profile</p>';
+            }
+        }
+
+        function closeCandidateModal() {
+            document.getElementById('candidateModal').classList.remove('active');
+        }
+
+        function startChat(userId) {
+            alert('Chat feature coming soon! Stay tuned.');
+        }
+
+        function clearFilters() {
+            document.getElementById('filterMajor').value = '';
+            document.getElementById('filterGradYear').value = '';
+            document.getElementById('filterLocation').value = '';
+            document.getElementById('filterExperience').value = '';
+            document.getElementById('filterSkills').value = '';
+            document.getElementById('filterMinScore').value = 0;
+            document.getElementById('minScoreValue').textContent = '0%';
+        }
+
+        // Initial search with no filters
+        searchCandidates();
+    </script>
+</body>
+
+</html>

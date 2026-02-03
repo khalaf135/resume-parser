@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificates - Jadeer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">📋</span>
+                    <span class="logo-text">Jadeer</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="/skills" class="nav-item">
+                    <span class="nav-icon">⚡</span>
+                    <span>Skills</span>
+                </a>
+                <a href="/certificates" class="nav-item active">
+                    <span class="nav-icon">📜</span>
+                    <span>Certificates</span>
+                </a>
+                <a href="/recommendations" class="nav-item">
+                    <span class="nav-icon">💡</span>
+                    <span>Get Recommendations</span>
+                </a>
+                <a href="/cvs" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>My CVs</span>
+                </a>
+                <a href="#" class="nav-item disabled">
+                    <span class="nav-icon">💬</span>
+                    <span>Chats</span>
+                    <span class="coming-soon">Soon</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h1>Certificates</h1>
+                    <p>Manage your professional certifications</p>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="btn-primary" onclick="openAddModal()">+ Add Certificate</button>
+                    <button class="btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <div class="certificates-content">
+                <div class="certificates-grid" id="certificatesGrid">
+                    <p class="empty-state">No certificates added yet. Add your first certificate!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Certificate Modal -->
+    <div class="modal-overlay" id="addCertModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Certificate</h3>
+                <button class="modal-close" onclick="closeAddModal()">×</button>
+            </div>
+            <form onsubmit="addCertificate(event)">
+                <div class="form-group">
+                    <label for="certName">Certificate Name *</label>
+                    <input type="text" id="certName" placeholder="e.g., AWS Solutions Architect" required>
+                </div>
+                <div class="form-group">
+                    <label for="issuer">Issuing Organization *</label>
+                    <input type="text" id="issuer" placeholder="e.g., Amazon Web Services">
+                </div>
+                <div class="form-group">
+                    <label for="issueDate">Issue Date</label>
+                    <input type="date" id="issueDate">
+                </div>
+                <div class="form-group">
+                    <label for="credentialId">Credential ID</label>
+                    <input type="text" id="credentialId" placeholder="e.g., ABC123XYZ">
+                </div>
+                <div class="form-group">
+                    <label for="credentialUrl">Credential URL</label>
+                    <input type="url" id="credentialUrl" placeholder="https://...">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeAddModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Certificate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Check authentication
+        if (!localStorage.getItem('access_token')) {
+            window.location.href = '/login';
+        }
+
+        // Load certificates
+        async function loadCertificates() {
+            try {
+                const response = await fetch('/api/certificates', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderCertificates(data.certificates);
+                }
+            } catch (error) {
+                console.error('Error loading certificates:', error);
+            }
+        }
+
+        function renderCertificates(certificates) {
+            const grid = document.getElementById('certificatesGrid');
+
+            if (!certificates || certificates.length === 0) {
+                grid.innerHTML = '<p class="empty-state">No certificates added yet. Add your first certificate!</p>';
+                return;
+            }
+
+            grid.innerHTML = certificates.map(cert => `
+                <div class="certificate-card">
+                    <div class="cert-header">
+                        <span class="cert-status-badge ${cert.status}">${getStatusLabel(cert.status)}</span>
+                        <button class="btn-icon btn-danger" onclick="deleteCertificate('${cert.id}')" title="Delete">🗑️</button>
+                    </div>
+                    <div class="cert-body">
+                        <h3>${cert.certificate_name}</h3>
+                        <p class="cert-issuer">${cert.issuing_organization || 'Unknown Issuer'}</p>
+                        ${cert.issue_date ? `<p class="cert-date">Issued: ${new Date(cert.issue_date).toLocaleDateString()}</p>` : ''}
+                        ${cert.credential_id ? `<p class="cert-id">ID: ${cert.credential_id}</p>` : ''}
+                    </div>
+                    ${cert.credential_url ? `
+                        <div class="cert-footer">
+                            <a href="${cert.credential_url}" target="_blank" class="link-btn">View Credential →</a>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getStatusLabel(status) {
+            switch (status) {
+                case 'verified': return '✓ Verified';
+                case 'pending': return '⏳ Pending';
+                case 'rejected': return '✗ Rejected';
+                default: return status;
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById('addCertModal').classList.add('active');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addCertModal').classList.remove('active');
+            document.getElementById('certName').value = '';
+            document.getElementById('issuer').value = '';
+            document.getElementById('issueDate').value = '';
+            document.getElementById('credentialId').value = '';
+            document.getElementById('credentialUrl').value = '';
+        }
+
+        async function addCertificate(e) {
+            e.preventDefault();
+
+            const data = {
+                certificate_name: document.getElementById('certName').value,
+                issuing_organization: document.getElementById('issuer').value,
+                issue_date: document.getElementById('issueDate').value || null,
+                credential_id: document.getElementById('credentialId').value,
+                credential_url: document.getElementById('credentialUrl').value
+            };
+
+            try {
+                const response = await fetch('/api/certificates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    closeAddModal();
+                    loadCertificates();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+
+        async function deleteCertificate(certId) {
+            if (!confirm('Are you sure you want to delete this certificate?')) return;
+
+            try {
+                const response = await fetch(`/api/certificates/${certId}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    loadCertificates();
+                }
+            } catch (error) {
+                alert('Error deleting certificate');
+            }
+        }
+
+        loadCertificates();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Jadeer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">📋</span>
+                    <span class="logo-text">Jadeer</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="/skills" class="nav-item">
+                    <span class="nav-icon">⚡</span>
+                    <span>Skills</span>
+                </a>
+                <a href="/certificates" class="nav-item">
+                    <span class="nav-icon">📜</span>
+                    <span>Certificates</span>
+                </a>
+                <a href="/recommendations" class="nav-item">
+                    <span class="nav-icon">💡</span>
+                    <span>Get Recommendations</span>
+                </a>
+                <a href="/cvs" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>My CVs</span>
+                </a>
+                <a href="#" class="nav-item disabled">
+                    <span class="nav-icon">💬</span>
+                    <span>Chats</span>
+                    <span class="coming-soon">Soon</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h1 id="pageTitle">Complete Your Profile</h1>
+                    <p>Let's set up your candidate profile to help employers find you</p>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="btn-primary" id="editBtn" onclick="toggleEdit()" style="display: none;">✏️ Edit
+                        Profile</button>
+                    <button class="btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <div class="profile-content">
+                <!-- Profile View Mode -->
+                <div class="profile-view" id="profileView" style="display: none;">
+                    <div class="profile-header-card">
+                        <div class="profile-avatar" id="avatarDisplay">
+                            <span id="avatarInitials">?</span>
+                        </div>
+                        <div class="profile-main-info">
+                            <h2 id="displayName">-</h2>
+                            <p class="headline" id="displayHeadline">-</p>
+                            <p class="location" id="displayLocation">📍 -</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">📧 Email</span>
+                            <span class="detail-value" id="displayEmail">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📱 Phone Number</span>
+                            <span class="detail-value" id="displayPhone">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">🎓 Major / Specialization</span>
+                            <span class="detail-value" id="displayMajor">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📅 Graduation Year</span>
+                            <span class="detail-value" id="displayGradYear">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">💼 Years of Experience</span>
+                            <span class="detail-value" id="displayExperience">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">🏢 Preferred Job Type</span>
+                            <span class="detail-value" id="displayJobType">-</span>
+                        </div>
+                        <div class="detail-item full-width">
+                            <span class="detail-label">📝 About Me</span>
+                            <span class="detail-value" id="displayBio">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Edit Form -->
+                <div class="profile-form" id="profileForm">
+                    <form onsubmit="saveProfile(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="fullName">Full Name *</label>
+                                <input type="text" id="fullName" placeholder="Your full name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="headline">Professional Headline *</label>
+                                <input type="text" id="headline" placeholder="e.g., Junior Frontend Developer">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="location">Location *</label>
+                                <input type="text" id="location" placeholder="e.g., Riyadh, Saudi Arabia">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" placeholder="+966 5XX XXX XXXX">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="major">Major / Specialization *</label>
+                                <select id="major">
+                                    <option value="">Select your specialization</option>
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Software Engineering">Software Engineering</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="Cybersecurity">Cybersecurity</option>
+                                    <option value="Information Technology">Information Technology</option>
+                                    <option value="Business Administration">Business Administration</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Human Resources">Human Resources</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gradYear">Graduation Year *</label>
+                                <input type="number" id="gradYear" placeholder="e.g., 2024" min="1990" max="2030">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="experience">Years of Experience *</label>
+                                <select id="experience">
+                                    <option value="">Select experience level</option>
+                                    <option value="Fresh Graduate">Fresh Graduate</option>
+                                    <option value="0-1 years">0-1 years</option>
+                                    <option value="1-3 years">1-3 years</option>
+                                    <option value="3-5 years">3-5 years</option>
+                                    <option value="5-10 years">5-10 years</option>
+                                    <option value="10+ years">10+ years</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="jobType">Preferred Job Type *</label>
+                                <select id="jobType">
+                                    <option value="">Select job type</option>
+                                    <option value="Full-time">Full-time</option>
+                                    <option value="Part-time">Part-time</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Internship">Internship</option>
+                                    <option value="Remote">Remote</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="bio">Short Bio / About Me</label>
+                                <textarea id="bio" rows="4"
+                                    placeholder="Tell us a bit about yourself and your career goals..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="cancelEdit()" id="cancelBtn"
+                                style="display: none;">Cancel</button>
+                            <button type="submit" class="btn-primary" id="saveBtn">Complete Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        let isEditing = true;
+        let hasProfile = false;
+
+        // Check authentication
+        if (!localStorage.getItem('access_token')) {
+            window.location.href = '/login';
+        }
+
+        // Load profile
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/profile', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+
+                if (data.success && data.profile) {
+                    const profile = data.profile;
+
+                    // Check if profile is mostly filled
+                    if (profile.full_name && profile.professional_headline) {
+                        hasProfile = true;
+                        showProfileView(profile);
+                    } else {
+                        // Show form with existing data
+                        fillForm(profile);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        function fillForm(profile) {
+            document.getElementById('fullName').value = profile.full_name || '';
+            document.getElementById('headline').value = profile.professional_headline || '';
+            document.getElementById('location').value = profile.location || '';
+            document.getElementById('phone').value = profile.phone || '';
+            document.getElementById('major').value = profile.major_specialization || '';
+            document.getElementById('gradYear').value = profile.graduation_year || '';
+            document.getElementById('experience').value = profile.years_of_experience || '';
+            document.getElementById('jobType').value = profile.preferred_job_type || '';
+            document.getElementById('bio').value = profile.bio || '';
+        }
+
+        function showProfileView(profile) {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            document.getElementById('profileForm').style.display = 'none';
+            document.getElementById('profileView').style.display = 'block';
+            document.getElementById('editBtn').style.display = 'inline-flex';
+            document.getElementById('pageTitle').textContent = 'Candidate Profile';
+
+            // Fill display fields
+            document.getElementById('displayName').textContent = profile.full_name || 'Not set';
+            document.getElementById('displayHeadline').textContent = profile.professional_headline || 'No headline';
+            document.getElementById('displayLocation').textContent = '📍 ' + (profile.location || 'Location not set');
+            document.getElementById('displayEmail').textContent = user.email || '-';
+            document.getElementById('displayPhone').textContent = profile.phone || '-';
+            document.getElementById('displayMajor').textContent = profile.major_specialization || '-';
+            document.getElementById('displayGradYear').textContent = profile.graduation_year || '-';
+            document.getElementById('displayExperience').textContent = profile.years_of_experience || '-';
+            document.getElementById('displayJobType').textContent = profile.preferred_job_type || '-';
+            document.getElementById('displayBio').textContent = profile.bio || '-';
+
+            // Set avatar initials
+            if (profile.full_name) {
+                const initials = profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                document.getElementById('avatarInitials').textContent = initials;
+            }
+
+            // Store profile for editing
+            window.currentProfile = profile;
+        }
+
+        function toggleEdit() {
+            isEditing = !isEditing;
+
+            if (isEditing) {
+                document.getElementById('profileForm').style.display = 'block';
+                document.getElementById('profileView').style.display = 'none';
+                document.getElementById('editBtn').style.display = 'none';
+                document.getElementById('cancelBtn').style.display = 'inline-flex';
+                document.getElementById('saveBtn').textContent = 'Save Changes';
+                document.getElementById('pageTitle').textContent = 'Edit Your Profile';
+
+                if (window.currentProfile) {
+                    fillForm(window.currentProfile);
+                }
+            }
+        }
+
+        function cancelEdit() {
+            if (hasProfile) {
+                isEditing = false;
+                document.getElementById('profileForm').style.display = 'none';
+                document.getElementById('profileView').style.display = 'block';
+                document.getElementById('editBtn').style.display = 'inline-flex';
+                document.getElementById('cancelBtn').style.display = 'none';
+                document.getElementById('pageTitle').textContent = 'Candidate Profile';
+            }
+        }
+
+        async function saveProfile(e) {
+            e.preventDefault();
+
+            const profileData = {
+                full_name: document.getElementById('fullName').value,
+                professional_headline: document.getElementById('headline').value,
+                location: document.getElementById('location').value,
+                phone: document.getElementById('phone').value,
+                major_specialization: document.getElementById('major').value,
+                graduation_year: parseInt(document.getElementById('gradYear').value) || null,
+                years_of_experience: document.getElementById('experience').value,
+                preferred_job_type: document.getElementById('jobType').value,
+                bio: document.getElementById('bio').value
+            };
+
+            try {
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    },
+                    body: JSON.stringify(profileData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    hasProfile = true;
+                    showProfileView(data.profile || profileData);
+                    isEditing = false;
+                } else {
+                    alert('Error saving profile: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>

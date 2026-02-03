@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard - Jadeer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar employer-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🏢</span>
+                    <span class="logo-text">Jadeer</span>
+                </div>
+                <span class="role-badge">Employer</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/employer/dashboard" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/employer/search" class="nav-item">
+                    <span class="nav-icon">🔍</span>
+                    <span>Find Candidates</span>
+                </a>
+                <a href="#" class="nav-item disabled">
+                    <span class="nav-icon">💬</span>
+                    <span>Chats</span>
+                    <span class="coming-soon">Soon</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h1>Welcome, <span id="employerName">Employer</span>!</h1>
+                    <p>Find and connect with top talent</p>
+                </div>
+                <div class="top-bar-actions">
+                    <span class="user-email" id="userEmail"></span>
+                    <button class="btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a href="/employer/search" class="action-card large">
+                        <div class="action-icon" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">🔍</div>
+                        <div class="action-info">
+                            <h3>Find Candidates</h3>
+                            <p>Search for candidates matching your requirements</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Left Column - Profile -->
+                    <div class="dashboard-column">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>🏢 Company Profile</h3>
+                                <button class="btn-sm btn-secondary" onclick="toggleEditProfile()">Edit</button>
+                            </div>
+                            <div class="card-body" id="profileView">
+                                <div class="company-profile">
+                                    <div class="profile-item">
+                                        <span class="label">Company Name</span>
+                                        <span class="value" id="companyName">-</span>
+                                    </div>
+                                    <div class="profile-item">
+                                        <span class="label">Contact Person</span>
+                                        <span class="value" id="contactName">-</span>
+                                    </div>
+                                    <div class="profile-item">
+                                        <span class="label">Role/Title</span>
+                                        <span class="value" id="roleTitle">-</span>
+                                    </div>
+                                    <div class="profile-item">
+                                        <span class="label">Location</span>
+                                        <span class="value" id="companyLocation">-</span>
+                                    </div>
+                                    <div class="profile-item">
+                                        <span class="label">Website</span>
+                                        <span class="value" id="companyWebsite">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body" id="profileEdit" style="display: none;">
+                                <form onsubmit="saveProfile(event)">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" id="editFullName">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Role/Title</label>
+                                        <input type="text" id="editRoleTitle">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Company Name</label>
+                                        <input type="text" id="editCompanyName">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Location</label>
+                                        <input type="text" id="editLocation">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone</label>
+                                        <input type="tel" id="editPhone">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Website</label>
+                                        <input type="url" id="editWebsite" placeholder="https://...">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Company Description</label>
+                                        <textarea id="editDescription" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="btn-secondary"
+                                            onclick="toggleEditProfile()">Cancel</button>
+                                        <button type="submit" class="btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="dashboard-column">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>💬 Recent Chats</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="empty-state">No chats yet</p>
+                                <p class="coming-soon-text">Chat feature coming soon...</p>
+                            </div>
+                        </div>
+
+                        <div class="cta-card employer-cta">
+                            <h2>Ready to find great talent?</h2>
+                            <p>Browse our pool of verified candidates with validated skills and certificates.</p>
+                            <a href="/employer/search" class="btn-primary">Search Candidates</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Check authentication
+        if (!localStorage.getItem('access_token')) {
+            window.location.href = '/login';
+        }
+
+        // Check role
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.role !== 'employer') {
+            window.location.href = '/dashboard';
+        }
+
+        document.getElementById('userEmail').textContent = user.email || '';
+
+        let currentProfile = {};
+
+        // Load profile
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/profile', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+
+                if (data.success && data.profile) {
+                    currentProfile = data.profile;
+                    displayProfile(data.profile);
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        function displayProfile(profile) {
+            document.getElementById('employerName').textContent = profile.full_name || 'Employer';
+            document.getElementById('companyName').textContent = profile.company_name || '-';
+            document.getElementById('contactName').textContent = profile.full_name || '-';
+            document.getElementById('roleTitle').textContent = profile.role_title || '-';
+            document.getElementById('companyLocation').textContent = profile.location || '-';
+            document.getElementById('companyWebsite').textContent = profile.company_website || '-';
+        }
+
+        function toggleEditProfile() {
+            const view = document.getElementById('profileView');
+            const edit = document.getElementById('profileEdit');
+
+            if (edit.style.display === 'none') {
+                edit.style.display = 'block';
+                view.style.display = 'none';
+                // Fill form
+                document.getElementById('editFullName').value = currentProfile.full_name || '';
+                document.getElementById('editRoleTitle').value = currentProfile.role_title || '';
+                document.getElementById('editCompanyName').value = currentProfile.company_name || '';
+                document.getElementById('editLocation').value = currentProfile.location || '';
+                document.getElementById('editPhone').value = currentProfile.phone || '';
+                document.getElementById('editWebsite').value = currentProfile.company_website || '';
+                document.getElementById('editDescription').value = currentProfile.company_description || '';
+            } else {
+                edit.style.display = 'none';
+                view.style.display = 'block';
+            }
+        }
+
+        async function saveProfile(e) {
+            e.preventDefault();
+
+            const profileData = {
+                full_name: document.getElementById('editFullName').value,
+                role_title: document.getElementById('editRoleTitle').value,
+                company_name: document.getElementById('editCompanyName').value,
+                location: document.getElementById('editLocation').value,
+                phone: document.getElementById('editPhone').value,
+                company_website: document.getElementById('editWebsite').value,
+                company_description: document.getElementById('editDescription').value
+            };
+
+            try {
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    },
+                    body: JSON.stringify(profileData)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    currentProfile = data.profile || profileData;
+                    displayProfile(currentProfile);
+                    toggleEditProfile();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>

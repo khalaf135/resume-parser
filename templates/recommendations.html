@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Recommendations - Jadeer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">📋</span>
+                    <span class="logo-text">Jadeer</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="/skills" class="nav-item">
+                    <span class="nav-icon">⚡</span>
+                    <span>Skills</span>
+                </a>
+                <a href="/certificates" class="nav-item">
+                    <span class="nav-icon">📜</span>
+                    <span>Certificates</span>
+                </a>
+                <a href="/recommendations" class="nav-item active">
+                    <span class="nav-icon">💡</span>
+                    <span>Get Recommendations</span>
+                </a>
+                <a href="/cvs" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>My CVs</span>
+                </a>
+                <a href="#" class="nav-item disabled">
+                    <span class="nav-icon">💬</span>
+                    <span>Chats</span>
+                    <span class="coming-soon">Soon</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <h1>CV Recommendations</h1>
+                    <p>Get AI-powered recommendations to improve your CV</p>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <div class="recommendations-content">
+                <!-- CV Selection -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📄 Select a CV to analyze</h3>
+                    </div>
+                    <div class="card-body">
+                        <select id="cvSelect" class="cv-select">
+                            <option value="">Select a CV...</option>
+                        </select>
+                        <button class="btn-primary" onclick="getRecommendations()" id="analyzeBtn">
+                            Get Recommendations
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recommendations Display -->
+                <div id="recommendationsPanel" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>💡 Recommendations</h3>
+                        </div>
+                        <div class="card-body" id="recommendationsContent">
+                            <!-- Recommendations will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Check authentication
+        if (!localStorage.getItem('access_token')) {
+            window.location.href = '/login';
+        }
+
+        // Load CVs
+        async function loadCVs() {
+            try {
+                const response = await fetch('/api/cvs', {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+
+                if (data.success && data.cvs) {
+                    const select = document.getElementById('cvSelect');
+                    data.cvs.forEach(cv => {
+                        const option = document.createElement('option');
+                        option.value = cv.id;
+                        option.textContent = `${cv.title || cv.filename} ${cv.is_primary ? '(Primary)' : ''}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading CVs:', error);
+            }
+        }
+
+        async function getRecommendations() {
+            const cvId = document.getElementById('cvSelect').value;
+            if (!cvId) {
+                alert('Please select a CV first');
+                return;
+            }
+
+            const btn = document.getElementById('analyzeBtn');
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+
+            try {
+                const response = await fetch(`/api/cvs/${cvId}`, {
+                    headers: getAuthHeaders()
+                });
+                const data = await response.json();
+
+                if (data.success && data.cv) {
+                    displayRecommendations(data.cv);
+                } else {
+                    alert('Error loading CV');
+                }
+            } catch (error) {
+                alert('Network error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Get Recommendations';
+            }
+        }
+
+        function displayRecommendations(cv) {
+            const scoreData = cv.score_data || {};
+            const panel = document.getElementById('recommendationsPanel');
+            const content = document.getElementById('recommendationsContent');
+
+            panel.style.display = 'block';
+
+            const categories = scoreData.categories || {};
+            const improvements = scoreData.improvements || [];
+            const strengths = scoreData.strengths || [];
+
+            content.innerHTML = `
+                <div class="score-overview">
+                    <div class="score-circle large">
+                        <span class="score-value">${scoreData.total_score || 0}</span>
+                        <span class="score-label">Overall Score</span>
+                    </div>
+                    <p class="overall-feedback">${scoreData.overall_feedback || 'No feedback available'}</p>
+                </div>
+
+                <div class="recommendation-section">
+                    <h4>📊 Category Breakdown</h4>
+                    <div class="categories-grid">
+                        ${Object.entries(categories).map(([key, cat]) => `
+                            <div class="category-card">
+                                <div class="category-header">
+                                    <span class="category-name">${formatCategoryName(key)}</span>
+                                    <span class="category-score">${cat.score}/25</span>
+                                </div>
+                                <div class="category-bar">
+                                    <div class="category-fill" style="width: ${(cat.score / 25) * 100}%"></div>
+                                </div>
+                                <p class="category-feedback">${cat.feedback}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                ${strengths.length > 0 ? `
+                    <div class="recommendation-section">
+                        <h4>✅ Strengths</h4>
+                        <ul class="strengths-list">
+                            ${strengths.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+
+                ${improvements.length > 0 ? `
+                    <div class="recommendation-section">
+                        <h4>🔧 Areas for Improvement</h4>
+                        <div class="improvements-list">
+                            ${improvements.map(imp => `
+                                <div class="improvement-item">
+                                    <span class="issue">⚠️ ${imp.issue}</span>
+                                    <span class="suggestion">💡 ${imp.suggestion}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        function formatCategoryName(key) {
+            return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        loadCVs();
+    </script>
+</body>
+
+</html>

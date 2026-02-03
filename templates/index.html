@@ -4,80 +4,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Parser - AI Powered</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Jadeer - Connect Talent with Opportunity</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            background: rgba(15, 15, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #9333ea 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-ghost:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(147, 51, 234, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 40px 80px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(147, 51, 234, 0.15);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            border-radius: 50px;
+            color: #a855f7;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #9333ea 0%, #6366f1 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 16px 36px;
+            font-size: 1.05rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 36px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(147, 51, 234, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Roles Section */
+        .roles {
+            padding: 100px 40px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .roles-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+
+        .role-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .role-card.candidate {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .role-card.employer {
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .role-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 24px;
+        }
+
+        .role-card.candidate .role-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, transparent 100%);
+        }
+
+        .role-card.employer .role-icon {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, transparent 100%);
+        }
+
+        .role-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .role-card p {
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .role-features {
+            text-align: left;
+            margin-bottom: 28px;
+        }
+
+        .role-features li {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 8px 0;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .role-features li::before {
+            content: '✓';
+            color: #10b981;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 40px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+
+            .features-grid,
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            header {
+                padding: 16px 20px;
+            }
+
+            .hero {
+                padding: 100px 20px 60px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <div class="header-top">
-                <h1 class="gradient-text">📄 AI Resume Parser</h1>
-                <div class="auth-controls" id="authControls">
-                    <a href="/login" class="btn-secondary" id="loginBtn">Login</a>
-                    <a href="/login#register" class="btn-primary-small" id="registerBtn">Register</a>
+    <header>
+        <a href="/" class="logo">
+            <span class="logo-icon">📋</span>
+            <span class="logo-text">Jadeer</span>
+        </a>
+        <nav>
+            <a href="/login" class="btn btn-ghost">Login</a>
+            <a href="/login#register" class="btn btn-primary">Get Started</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-badge">✨ AI-Powered Career Platform</span>
+            <h1>Connect <span>Talent</span> with <span>Opportunity</span></h1>
+            <p>Upload your CV, verify your skills with AI assessments, and get discovered by top employers looking for
+                verified talent.</p>
+            <div class="hero-buttons">
+                <a href="/login#register" class="btn btn-primary btn-large">Get Started Free</a>
+                <a href="#features" class="btn btn-secondary btn-large">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Why Choose Jadeer?</h2>
+            <p>Everything you need to advance your career or find the perfect candidate</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">📄</div>
+                <h3>Smart CV Analysis</h3>
+                <p>Our AI analyzes your CV and provides detailed feedback with personalized recommendations to improve
+                    your chances.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);">⚡</div>
+                <h3>Skill Verification</h3>
+                <p>Take AI-generated assessments to verify your skills. Verified badges help you stand out to employers.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🔍</div>
+                <h3>Smart Matching</h3>
+                <p>Employers can search and filter candidates by skills, experience, and verified competencies.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="roles" id="roles">
+        <div class="roles-container">
+            <div class="section-header">
+                <h2>Choose Your Path</h2>
+                <p>Whether you're looking for a job or hiring talent</p>
+            </div>
+            <div class="roles-grid">
+                <div class="role-card candidate">
+                    <div class="role-icon">👤</div>
+                    <h3>For Candidates</h3>
+                    <p>Build your profile, showcase your skills, and connect with employers looking for talent like you.
+                    </p>
+                    <ul class="role-features">
+                        <li>Upload and manage multiple CVs</li>
+                        <li>Get AI-powered CV recommendations</li>
+                        <li>Verify skills with assessments</li>
+                        <li>Track certificates and achievements</li>
+                        <li>Get discovered by employers</li>
+                    </ul>
+                    <a href="/login#register" class="btn btn-primary">Join as Candidate</a>
+                </div>
+                <div class="role-card employer">
+                    <div class="role-icon">🏢</div>
+                    <h3>For Employers</h3>
+                    <p>Find pre-screened candidates with verified skills and qualifications that match your
+                        requirements.</p>
+                    <ul class="role-features">
+                        <li>Search verified candidates</li>
+                        <li>Filter by skills and experience</li>
+                        <li>View skill assessment scores</li>
+                        <li>Access candidate CVs and profiles</li>
+                        <li>Connect with potential hires</li>
+                    </ul>
+                    <a href="/login#register" class="btn btn-primary">Join as Employer</a>
                 </div>
             </div>
-            <p class="subtitle">Upload your resume for instant AI-powered analysis, scoring & quiz</p>
-        </header>
+        </div>
+    </section>
 
+    <footer>
+        <p>© 2024 Jadeer. Built with ❤️ for connecting talent with opportunity.</p>
+    </footer>
 
-        <main>
-            <div class="upload-section">
-                <div class="upload-box" id="uploadBox">
-                    <div class="upload-icon">📤</div>
-                    <h2>Drop your PDF here</h2>
-                    <p>or click to browse</p>
-                    <input type="file" id="fileInput" accept=".pdf" hidden>
-                </div>
-
-                <div class="file-info" id="fileInfo" style="display: none;">
-                    <span class="file-icon">📎</span>
-                    <span class="file-name" id="fileName"></span>
-                    <button class="remove-file" id="removeFile">✕</button>
-                </div>
-
-                <button class="btn-primary" id="analyzeBtn" disabled>
-                    <span class="btn-text">🔍 Analyze Resume</span>
-                    <span class="btn-loading" style="display: none;">
-                        <span class="spinner"></span> Processing...
-                    </span>
-                </button>
-            </div>
-
-            <div class="progress-section" id="progressSection" style="display: none;">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <p class="progress-text" id="progressText">Initializing...</p>
-            </div>
-
-            <div class="features">
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3>OCR Extraction</h3>
-                    <p>Mistral OCR extracts all text from your PDF</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Scoring</h3>
-                    <p>Get a detailed score out of 100 with feedback</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Quiz</h3>
-                    <p>Test your knowledge with AI-generated questions</p>
-                </div>
-            </div>
-        </main>
-
-        <footer>
-            <p>Powered by Mistral AI • Local Processing</p>
-        </footer>
-    </div>
-
-    <script src="/static/app.js"></script>
+    <script>
+        // Check if already logged in
+        if (localStorage.getItem('access_token')) {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.role === 'employer') {
+                window.location.href = '/employer/dashboard';
+            } else {
+                window.location.href = '/dashboard';
+            }
+        }
+    </script>
 </body>
 
 </html>
