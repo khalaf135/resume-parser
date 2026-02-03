@@ -245,7 +245,13 @@
 
         async function startAssessment(skillId, skillName) {
             document.getElementById('assessmentTitle').textContent = `${skillName} Assessment`;
-            document.getElementById('assessmentContent').innerHTML = '<div class="loading">Loading questions...</div>';
+            document.getElementById('assessmentContent').innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>⏳ AI is generating your custom assessment...</p>
+                    <p class="subtext">This can take up to 30 seconds. Please don't close this window.</p>
+                </div>
+            `;
             document.getElementById('assessmentModal').classList.add('active');
 
             try {
@@ -349,7 +355,12 @@
                 answers[lastQId] = selected.value;
             }
 
-            document.getElementById('assessmentContent').innerHTML = '<div class="loading">Evaluating...</div>';
+            document.getElementById('assessmentContent').innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>🧠 AI is evaluating your answers...</p>
+                </div>
+            `;
 
             try {
                 const response = await fetch('/api/skills/evaluate', {

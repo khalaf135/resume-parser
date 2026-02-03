@@ -124,7 +124,7 @@ Respond with JSON in this exact format:
 def generate_skill_assessment(skill_name, skill_type):
     """Generate skill assessment questions for a specific skill."""
     if skill_type == 'technical':
-        prompt = f"""Generate 10 technical assessment questions for the skill: {skill_name}
+        prompt = f"""Generate 5 technical assessment questions for the skill: {skill_name}
 
 Create questions that test actual knowledge of {skill_name}. Include:
 - Code tracing questions (what does this code output?)
@@ -148,7 +148,7 @@ Respond with JSON in this exact format:
     ]
 }}"""
     else:
-        prompt = f"""Generate 10 soft skill assessment questions for: {skill_name}
+        prompt = f"""Generate 5 soft skill assessment questions for: {skill_name}
 
 Create scenario-based questions that assess the candidate's {skill_name} abilities.
 Present workplace scenarios and ask how they would handle them.
@@ -1028,11 +1028,14 @@ def search_candidates():
         if location:
             query = query.ilike('location', f'%{location}%')
         if graduation_year:
-            query = query.eq('graduation_year', int(graduation_year))
+            try:
+                query = query.eq('graduation_year', int(graduation_year))
+            except: pass
         if experience:
             query = query.eq('years_of_experience', experience)
         
         candidates_result = query.execute()
+        print(f"DEBUG: Found {len(candidates_result.data)} raw candidate profiles")
         
         # Enhance with skills data
         candidates = []
