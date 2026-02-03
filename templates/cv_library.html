@@ -124,7 +124,13 @@
         const fileInput = document.getElementById('cvFile');
         const fileName = document.getElementById('fileName');
 
-        dropZone.addEventListener('click', () => fileInput.click());
+        // Only trigger file input when clicking the dropzone area, not the form buttons
+        dropZone.addEventListener('click', (e) => {
+            // Prevent triggering file input if clicking inside form-actions
+            if (!e.target.closest('.form-actions')) {
+                fileInput.click();
+            }
+        });
 
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -142,6 +148,8 @@
             if (file && file.type === 'application/pdf') {
                 fileInput.files = e.dataTransfer.files;
                 fileName.textContent = file.name;
+            } else if (file) {
+                alert('Please upload a PDF file only.');
             }
         });
 
@@ -206,13 +214,26 @@
             document.getElementById('fileName').textContent = '';
         }
 
+        let isUploading = false;
+
         async function uploadCV(e) {
             e.preventDefault();
+            e.stopPropagation();
+
+            // Prevent double submission
+            if (isUploading) {
+                console.log('Upload already in progress');
+                return;
+            }
 
             const file = fileInput.files[0];
-            if (!file) return;
+            if (!file) {
+                alert('Please select a PDF file first.');
+                return;
+            }
 
             const btn = document.getElementById('uploadBtn');
+            isUploading = true;
             btn.disabled = true;
             btn.textContent = 'Analyzing...';
 
@@ -221,27 +242,32 @@
             formData.append('title', document.getElementById('cvTitle').value || file.name);
 
             try {
+                const token = localStorage.getItem('access_token');
                 const response = await fetch('/api/parse', {
                     method: 'POST',
-                    headers: getAuthHeaders(),
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: formData
                 });
 
                 const data = await response.json();
 
-                if (data.success) {
+                if (response.ok && data.success) {
                     closeUploadModal();
                     loadCVs();
                     // Optionally show the results
                     if (data.cv_id) {
-                        viewCV(data.cv_id);
+                        setTimeout(() => viewCV(data.cv_id), 500);
                     }
                 } else {
-                    alert('Error: ' + data.error);
+                    alert('Error: ' + (data.error || 'Upload failed'));
                 }
             } catch (error) {
+                console.error('Upload error:', error);
                 alert('Network error. Please try again.');
             } finally {
+                isUploading = false;
                 btn.disabled = false;
                 btn.textContent = 'Upload & Analyze';
             }

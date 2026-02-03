@@ -827,12 +827,10 @@ def parse_resume():
                 file_path = f"{user.user.id}/{timestamp}_{safe_filename}"
                 
                 try:
-                    # Reset file pointer to beginning for upload
-                    file.seek(0)
-                    upload_data = file.read()
+                    # Use the already-read pdf_bytes for upload
                     user_client.storage.from_('resumes').upload(
                         path=file_path,
-                        file=upload_data,
+                        file=pdf_bytes,
                         file_options={"content-type": "application/pdf"}
                     )
                 except Exception as upload_error:
