@@ -1,6 +1,8 @@
 from datetime import datetime
 from supabase import create_client, Client
-from services import ocr_service, resume_service, quiz_service
+import ocr_service
+import resume_service
+import quiz_service
 
 
 app = Flask(__name__)
