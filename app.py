@@ -418,9 +418,9 @@ def login():
             try:
                 user_client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
                 user_client.auth.set_session(response.session.access_token, response.session.access_token)
-                role_result = user_client.table('user_roles').select('role').eq('user_id', response.user.id).single().execute()
+                role_result = user_client.table('user_roles').select('role').eq('user_id', response.user.id).execute()
                 if role_result.data:
-                    role = role_result.data['role']
+                    role = role_result.data[0]['role']
             except Exception as role_error:
                 print(f"Role fetch error: {role_error}")
             
@@ -462,9 +462,9 @@ def get_current_user():
     # Get role
     role = 'candidate'
     try:
-        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).single().execute()
+        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).execute()
         if role_result.data:
-            role = role_result.data['role']
+            role = role_result.data[0]['role']
     except Exception:
         pass
     
@@ -486,17 +486,19 @@ def get_profile():
     
     try:
         # Get role first
-        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).single().execute()
-        role = role_result.data['role'] if role_result.data else 'candidate'
+        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).execute()
+        role = role_result.data[0]['role'] if role_result.data else 'candidate'
         
         # Get profile based on role
         table = 'candidate_profiles' if role == 'candidate' else 'employer_profiles'
-        profile_result = user_client.table(table).select('*').eq('user_id', user.id).single().execute()
+        profile_result = user_client.table(table).select('*').eq('user_id', user.id).execute()
+        
+        profile = profile_result.data[0] if profile_result.data else {}
         
         return jsonify({
             "success": True,
             "role": role,
-            "profile": profile_result.data
+            "profile": profile
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -512,20 +514,24 @@ def update_profile():
     
     try:
         # Get role first
-        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).single().execute()
-        role = role_result.data['role'] if role_result.data else 'candidate'
+        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).execute()
+        role = role_result.data[0]['role'] if role_result.data else 'candidate'
         
-        # Update profile based on role
+        # Update profile based on role using upsert
         table = 'candidate_profiles' if role == 'candidate' else 'employer_profiles'
-        data['updated_at'] = datetime.now().isoformat()
         
-        result = user_client.table(table).update(data).eq('user_id', user.id).execute()
+        profile_data = data
+        profile_data['user_id'] = user.id
+        profile_data['updated_at'] = datetime.now().isoformat()
+        
+        result = user_client.table(table).upsert(profile_data).execute()
         
         return jsonify({
             "success": True,
             "profile": result.data[0] if result.data else None
         })
     except Exception as e:
+        print(f"Update profile error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/profile/<user_id>', methods=['GET'])
@@ -537,12 +543,13 @@ def get_user_profile(user_id):
     
     try:
         # Check if current user is employer
-        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).single().execute()
-        if not role_result.data or role_result.data['role'] != 'employer':
+        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).execute()
+        if not role_result.data or role_result.data[0]['role'] != 'employer':
             return jsonify({"error": "Only employers can view candidate profiles"}), 403
         
         # Get target user's profile
-        profile_result = user_client.table('candidate_profiles').select('*').eq('user_id', user_id).single().execute()
+        profile_result = user_client.table('candidate_profiles').select('*').eq('user_id', user_id).execute()
+        profile = profile_result.data[0] if profile_result.data else {}
         
         # Get target user's skills
         skills_result = user_client.table('skills').select('*').eq('user_id', user_id).execute()
@@ -555,7 +562,7 @@ def get_user_profile(user_id):
         
         return jsonify({
             "success": True,
-            "profile": profile_result.data,
+            "profile": profile,
             "skills": skills_result.data,
             "certificates": certs_result.data,
             "primary_cv": cv_result.data[0] if cv_result.data else None
@@ -624,11 +631,11 @@ def assess_skill(skill_id):
     
     try:
         # Get the skill
-        skill_result = user_client.table('skills').select('*').eq('id', skill_id).eq('user_id', user.id).single().execute()
+        skill_result = user_client.table('skills').select('*').eq('id', skill_id).eq('user_id', user.id).execute()
         if not skill_result.data:
             return jsonify({"error": "Skill not found"}), 404
         
-        skill = skill_result.data
+        skill = skill_result.data[0]
         
         # Generate assessment questions
         assessment = generate_skill_assessment(skill['skill_name'], skill['skill_type'])
@@ -920,12 +927,13 @@ def get_cv(cv_id):
         if not user or not user.user:
             return jsonify({"error": "Invalid token"}), 401
         
-        result = user_client.table('cvs').select('*').eq('id', cv_id).single().execute()
+        result = user_client.table('cvs').select('*').eq('id', cv_id).execute()
         
         if result.data:
+            cv = result.data[0]
             # Generate signed URL for the PDF if it exists
             pdf_url = None
-            if result.data.get('file_path'):
+            if cv.get('file_path'):
                 try:
                     url_response = user_client.storage.from_('resumes').create_signed_url(
                         result.data['file_path'], 
@@ -1008,8 +1016,8 @@ def search_candidates():
     
     try:
         # Check if user is employer
-        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).single().execute()
-        if not role_result.data or role_result.data['role'] != 'employer':
+        role_result = user_client.table('user_roles').select('role').eq('user_id', user.id).execute()
+        if not role_result.data or role_result.data[0]['role'] != 'employer':
             return jsonify({"error": "Only employers can search candidates"}), 403
         
         # Get filter parameters
