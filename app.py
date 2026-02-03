@@ -1,223 +1,21 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
-import json
-import base64
-import os
-from mistralai import Mistral
-from supabase import create_client, Client
 from datetime import datetime
+from supabase import create_client, Client
+from services import ocr_service, resume_service, quiz_service
 
 
 app = Flask(__name__)
 
-# Initialize Mistral client (use env var or fallback)
-MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY", "kORYxfwgU2OlpmMZ7ykKD9r4grLmT5l4")
-client = Mistral(api_key=MISTRAL_API_KEY)
+# Initialize Supabase client
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY")
 
-# Initialize Supabase client (use env vars or fallback)
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://qgjrfyvndhusydplqgnp.supabase.co")
-SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnanJmeXZuZGh1c3lkcGxxZ25wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMTk3MzUsImV4cCI6MjA4NTU5NTczNX0.IagPiWX9NCh90cPzefwab6yd3fOjIybyrbhbuGVBaww")
+if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    raise ValueError("SUPABASE_URL or SUPABASE_ANON_KEY not found in environment variables")
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 # Store session data (in production, use Redis or database)
 session_data = {}
-
-def extract_resume_with_ocr(pdf_bytes):
-    """Use Mistral OCR to extract text from PDF resume."""
-    pdf_base64 = base64.b64encode(pdf_bytes).decode("utf-8")
-    
-    ocr_response = client.ocr.process(
-        model="mistral-ocr-2512",
-        document={
-            "type": "document_url",
-            "document_url": f"data:application/pdf;base64,{pdf_base64}"
-        },
-        include_image_base64=False
-    )
-    
-    all_text = ""
-    for page in ocr_response.pages:
-        all_text += f"\n--- Page {page.index + 1} ---\n"
-        all_text += page.markdown
-    
-    return all_text
-
-def structure_resume_data(raw_text):
-    """Use Mistral LLM to structure the extracted text into JSON."""
-    structure_prompt = """Analyze the following resume/CV text and extract the information into a structured JSON format.
-
-Extract the following fields (use null if not found):
-- name: Full name of the candidate
-- email: Email address
-- phone: Phone number
-- location: City, Country or full address
-- linkedin: LinkedIn profile URL
-- summary: Professional summary or objective
-- experience: Array of work experiences, each with company, title, duration, location, responsibilities
-- education: Array of educational qualifications with institution, degree, field, duration, gpa
-- skills: Object with technical, soft, languages (programming), tools arrays
-- certifications: Array of certifications with name and date
-- languages: Array of spoken languages with proficiency
-- projects: Array of projects with name and description
-
-Resume Text:
-"""
-    
-    response = client.chat.complete(
-        model="mistral-large-latest",
-        messages=[{"role": "user", "content": structure_prompt + raw_text + "\n\nRespond ONLY with valid JSON."}],
-        response_format={"type": "json_object"}
-    )
-    
-    return json.loads(response.choices[0].message.content)
-
-def score_resume(resume_data, raw_text):
-    """Score the resume out of 100 with detailed breakdown."""
-    score_prompt = f"""Analyze this resume and provide a detailed score out of 100.
-
-Resume Data: {json.dumps(resume_data, indent=2)}
-
-Score the resume in these 4 categories (25 points each):
-
-1. **Content Quality (0-25)**: Professional summary quality, quantified achievements, action verbs, metrics
-2. **Skills Relevance (0-25)**: Technical skills relevance, industry keywords, skill organization
-3. **Experience Clarity (0-25)**: Clear job descriptions, career progression, responsibilities clarity
-4. **Formatting & Structure (0-25)**: Completeness, organization, section balance
-
-Respond with JSON in this exact format:
-{{
-    "total_score": <number 0-100>,
-    "categories": {{
-        "content_quality": {{
-            "score": <0-25>,
-            "feedback": "<specific feedback>"
-        }},
-        "skills_relevance": {{
-            "score": <0-25>,
-            "feedback": "<specific feedback>"
-        }},
-        "experience_clarity": {{
-            "score": <0-25>,
-            "feedback": "<specific feedback>"
-        }},
-        "formatting_structure": {{
-            "score": <0-25>,
-            "feedback": "<specific feedback>"
-        }}
-    }},
-    "strengths": ["<strength 1>", "<strength 2>", "<strength 3>"],
-    "improvements": [
-        {{"issue": "<issue>", "suggestion": "<how to fix>"}},
-        {{"issue": "<issue>", "suggestion": "<how to fix>"}},
-        {{"issue": "<issue>", "suggestion": "<how to fix>"}}
-    ],
-    "overall_feedback": "<2-3 sentence overall assessment>"
-}}"""
-
-    response = client.chat.complete(
-        model="mistral-large-latest",
-        messages=[{"role": "user", "content": score_prompt}],
-        response_format={"type": "json_object"}
-    )
-    
-    return json.loads(response.choices[0].message.content)
-
-def generate_skill_assessment(skill_name, skill_type):
-    """Generate skill assessment questions for a specific skill."""
-    if skill_type == 'technical':
-        prompt = f"""Generate 5 technical assessment questions for the skill: {skill_name}
-
-Create questions that test actual knowledge of {skill_name}. Include:
-- Code tracing questions (what does this code output?)
-- Debugging questions (find the error)
-- Concept questions
-- Best practices questions
-
-For programming skills, include actual code snippets to analyze.
-
-Respond with JSON in this exact format:
-{{
-    "questions": [
-        {{
-            "id": 1,
-            "type": "multiple_choice",
-            "question": "<question with code if applicable>",
-            "options": ["A", "B", "C", "D"],
-            "correct_answer": "<correct option>",
-            "explanation": "<why this is correct>"
-        }}
-    ]
-}}"""
-    else:
-        prompt = f"""Generate 5 soft skill assessment questions for: {skill_name}
-
-Create scenario-based questions that assess the candidate's {skill_name} abilities.
-Present workplace scenarios and ask how they would handle them.
-
-Respond with JSON in this exact format:
-{{
-    "questions": [
-        {{
-            "id": 1,
-            "type": "multiple_choice",
-            "question": "<scenario-based question>",
-            "options": ["A", "B", "C", "D"],
-            "correct_answer": "<correct option>",
-            "explanation": "<why this is the best approach>"
-        }}
-    ]
-}}"""
-
-    response = client.chat.complete(
-        model="mistral-large-latest",
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"}
-    )
-    
-    return json.loads(response.choices[0].message.content)
-
-def generate_quiz(resume_data):
-    """Generate quiz questions from resume content."""
-    quiz_prompt = f"""Based on this resume data, generate 7 quiz questions to test if the person actually knows what they claimed on their resume.
-
-Resume Data: {json.dumps(resume_data, indent=2)}
-
-Create questions about:
-- Their work experience details
-- Technical skills they mentioned
-- Projects they worked on
-- Their education
-- Specific achievements they claimed
-
-Mix question types: multiple choice (4 options, one correct) and true/false.
-
-Respond with JSON in this exact format:
-{{
-    "questions": [
-        {{
-            "id": 1,
-            "type": "multiple_choice",
-            "question": "<question text>",
-            "options": ["A", "B", "C", "D"],
-            "correct_answer": "<correct option>",
-            "explanation": "<why this is the correct answer>"
-        }},
-        {{
-            "id": 2,
-            "type": "true_false",
-            "question": "<question text>",
-            "correct_answer": "true" or "false",
-            "explanation": "<why this is correct>"
-        }}
-    ]
-}}"""
-
-    response = client.chat.complete(
-        model="mistral-large-latest",
-        messages=[{"role": "user", "content": quiz_prompt}],
-        response_format={"type": "json_object"}
-    )
-    
-    return json.loads(response.choices[0].message.content)
 
 def get_user_from_token(request):
     """Extract and validate user from Authorization header."""
@@ -658,7 +456,7 @@ def assess_skill(skill_id):
         skill = skill_result.data[0]
         
         # Generate assessment questions
-        assessment = generate_skill_assessment(skill['skill_name'], skill['skill_type'])
+        assessment = quiz_service.generate_skill_assessment(skill['skill_name'], skill['skill_type'])
         
         # Store in session
         session_id = base64.b64encode(os.urandom(16)).decode('utf-8')
@@ -823,13 +621,13 @@ def parse_resume():
         pdf_bytes = file.read()
         
         # Extract text using OCR
-        raw_text = extract_resume_with_ocr(pdf_bytes)
+        raw_text = ocr_service.extract_resume_with_ocr(pdf_bytes)
         
         # Structure the data
-        resume_data = structure_resume_data(raw_text)
+        resume_data = resume_service.structure_resume_data(raw_text)
         
         # Score the resume
-        score_data = score_resume(resume_data, raw_text)
+        score_data = resume_service.score_resume(resume_data, raw_text)
         
         # Store in session
         session_id = base64.b64encode(os.urandom(16)).decode('utf-8')
@@ -1121,7 +919,7 @@ def get_quiz():
     
     try:
         resume_data = session_data[session_id]["resume_data"]
-        quiz_data = generate_quiz(resume_data)
+        quiz_data = quiz_service.generate_quiz(resume_data)
         
         # Store quiz for evaluation
         session_data[session_id]["quiz"] = quiz_data
