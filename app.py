@@ -520,18 +520,38 @@ def update_profile():
         # Update profile based on role using upsert
         table = 'candidate_profiles' if role == 'candidate' else 'employer_profiles'
         
-        profile_data = data
+        # Define allowed columns to prevent database errors from extra fields
+        if role == 'candidate':
+            allowed_cols = [
+                'user_id', 'full_name', 'professional_headline', 'location', 
+                'phone', 'major_specialization', 'graduation_year', 
+                'years_of_experience', 'bio', 'preferred_job_type', 'updated_at'
+            ]
+        else:
+            allowed_cols = [
+                'user_id', 'full_name', 'company_name', 'industry', 
+                'company_size', 'location', 'website', 'bio', 'updated_at'
+            ]
+        
+        # Filter profile data
+        profile_data = {k: v for k, v in data.items() if k in allowed_cols}
         profile_data['user_id'] = user.id
         profile_data['updated_at'] = datetime.now().isoformat()
         
+        print(f"DEBUG: Upserting to {table} for user {user.id}. Data: {profile_data}")
+        
         result = user_client.table(table).upsert(profile_data).execute()
+        
+        print(f"DEBUG: Upsert result: {result.data}")
         
         return jsonify({
             "success": True,
-            "profile": result.data[0] if result.data else None
+            "profile": result.data[0] if result.data else profile_data
         })
     except Exception as e:
-        print(f"Update profile error: {e}")
+        print(f"Update profile error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/profile/<user_id>', methods=['GET'])
