@@ -93,11 +93,11 @@
                     <div class="dashboard-column">
                         <div class="card">
                             <div class="card-header">
-                                <h3>📜 Certificates</h3>
-                                <a href="/certificates" class="link-btn">View All</a>
+                                <h3>⚡ Skills</h3>
+                                <a href="/skills" class="link-btn">View All</a>
                             </div>
-                            <div class="card-body" id="certificatesList">
-                                <p class="empty-state">No certificates yet. <a href="/certificates">Add one</a></p>
+                            <div class="card-body" id="skillsList">
+                                <p class="empty-state">No skills yet. <a href="/skills">Add one</a></p>
                             </div>
                         </div>
 
@@ -196,16 +196,17 @@
                     }
                 }
 
-                // Load certificates
-                const certsRes = await fetch('/api/certificates', { headers });
-                const certsData = await certsRes.json();
+                // Load skills
+                const skillsRes = await fetch('/api/skills', { headers });
+                const skillsData = await skillsRes.json();
 
-                if (certsData.success && certsData.certificates.length > 0) {
-                    const certsList = document.getElementById('certificatesList');
-                    certsList.innerHTML = certsData.certificates.slice(0, 3).map(cert => `
-                        <div class="cert-item">
-                            <span class="cert-status ${cert.status}">${cert.status === 'verified' ? '✓' : '○'}</span>
-                            <span class="cert-name">${cert.certificate_name}</span>
+                if (skillsData.success && skillsData.skills && skillsData.skills.length > 0) {
+                    const skillsList = document.getElementById('skillsList');
+                    skillsList.innerHTML = skillsData.skills.slice(0, 5).map(skill => `
+                        <div class="skill-item">
+                            <span class="skill-status ${skill.is_verified ? 'verified' : 'pending'}">${skill.is_verified ? '✓' : '○'}</span>
+                            <span class="skill-name">${skill.skill_name}</span>
+                            ${skill.score > 0 ? `<span class="skill-score">${skill.score}%</span>` : ''}
                         </div>
                     `).join('');
                 }
