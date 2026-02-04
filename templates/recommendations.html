@@ -162,54 +162,64 @@
             const strengths = scoreData.strengths || [];
 
             content.innerHTML = `
-                <div class="score-overview">
-                    <div class="score-circle large">
-                        <span class="score-value">${scoreData.total_score || 0}</span>
-                        <span class="score-label">Overall Score</span>
+                <div class="report-header-box">
+                    <div class="score-main-display">
+                        <div class="score-ring">
+                            <span class="score-val">${scoreData.total_score || 0}</span>
+                            <span class="score-lbl">Score</span>
+                        </div>
+                        <div class="feedback-main">
+                            <h4>AI Performance Analysis</h4>
+                            <p>${scoreData.overall_feedback || 'No feedback available'}</p>
+                        </div>
                     </div>
-                    <p class="overall-feedback">${scoreData.overall_feedback || 'No feedback available'}</p>
                 </div>
 
-                <div class="recommendation-section">
-                    <h4>📊 Category Breakdown</h4>
-                    <div class="categories-grid">
+                <div class="report-section">
+                    <h3 class="section-title-modern">📊 Category Insights</h3>
+                    <div class="cat-grid-modern">
                         ${Object.entries(categories).map(([key, cat]) => `
-                            <div class="category-card">
-                                <div class="category-header">
-                                    <span class="category-name">${formatCategoryName(key)}</span>
-                                    <span class="category-score">${cat.score}/25</span>
+                            <div class="cat-modern-card">
+                                <div class="cat-info-top">
+                                    <span class="cat-label-text">${formatCategoryName(key)}</span>
+                                    <span class="cat-score-text">${cat.score}/25</span>
                                 </div>
-                                <div class="category-bar">
-                                    <div class="category-fill" style="width: ${(cat.score / 25) * 100}%"></div>
+                                <div class="cat-track">
+                                    <div class="cat-thumb" style="width: ${(cat.score / 25) * 100}%"></div>
                                 </div>
-                                <p class="category-feedback">${cat.feedback}</p>
+                                <p class="cat-hint">${cat.feedback}</p>
                             </div>
                         `).join('')}
                     </div>
                 </div>
 
-                ${strengths.length > 0 ? `
-                    <div class="recommendation-section">
-                        <h4>✅ Strengths</h4>
-                        <ul class="strengths-list">
-                            ${strengths.map(s => `<li>${s}</li>`).join('')}
-                        </ul>
-                    </div>
-                ` : ''}
-
-                ${improvements.length > 0 ? `
-                    <div class="recommendation-section">
-                        <h4>🔧 Areas for Improvement</h4>
-                        <div class="improvements-list">
-                            ${improvements.map(imp => `
-                                <div class="improvement-item">
-                                    <span class="issue">⚠️ ${imp.issue}</span>
-                                    <span class="suggestion">💡 ${imp.suggestion}</span>
-                                </div>
-                            `).join('')}
+                <div class="report-dual-grid">
+                    ${strengths.length > 0 ? `
+                        <div class="report-section">
+                            <h3 class="section-title-modern success">✅ Key Strengths</h3>
+                            <div class="points-list">
+                                ${strengths.map(s => `<div class="point-item success"><span class="point-icon">✓</span> ${s}</div>`).join('')}
+                            </div>
                         </div>
-                    </div>
-                ` : ''}
+                    ` : ''}
+
+                    ${improvements.length > 0 ? `
+                        <div class="report-section">
+                            <h3 class="section-title-modern warning">🔧 Areas for Growth</h3>
+                            <div class="points-list">
+                                ${improvements.map(imp => `
+                                    <div class="point-item warning">
+                                        <div class="point-top">
+                                            <span class="point-icon">⚠️</span>
+                                            <strong>${imp.issue}</strong>
+                                        </div>
+                                        <p class="point-sub">${imp.suggestion}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
             `;
         }
 

@@ -64,52 +64,73 @@
 
             <div class="profile-content">
                 <!-- Profile View Mode -->
-                <div class="profile-view" id="profileView" style="display: none;">
-                    <div class="profile-header-card">
-                        <div class="profile-avatar" id="avatarDisplay">
+                <div class="profile-view-container" id="profileView" style="display: none;">
+                    <div class="profile-header-card-new">
+                        <div class="profile-avatar-circle" id="avatarDisplay">
                             <span id="avatarInitials">?</span>
                         </div>
-                        <div class="profile-main-info">
-                            <h2 id="displayName">-</h2>
-                            <p class="headline" id="displayHeadline">-</p>
-                            <p class="location" id="displayLocation">📍 -</p>
+                        <div class="profile-info-main">
+                            <h2 id="displayName">Loading...</h2>
+                            <p class="headline-text" id="displayHeadline">Loading...</p>
+                            <div class="profile-meta">
+                                <span id="displayLocation">📍 Loading...</span>
+                                <span id="displayEmail" class="email-meta">📧 Loading...</span>
+                            </div>
                         </div>
+                        <button class="btn btn-primary edit-profile-btn" onclick="toggleEdit()">Edit Profile</button>
                     </div>
 
-                    <div class="profile-details-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">📧 Email</span>
-                            <span class="detail-value" id="displayEmail">-</span>
+                    <div class="profile-sections-grid">
+                        <div class="profile-section-card">
+                            <h3 class="section-title">👤 Personal Information</h3>
+                            <div class="details-list">
+                                <div class="detail-row">
+                                    <span class="label">Phone</span>
+                                    <span class="value" id="displayPhone">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Job Type</span>
+                                    <span class="value" id="displayJobType">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Bio</span>
+                                    <span class="value" id="displayBio">-</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="detail-item">
-                            <span class="detail-label">📱 Phone Number</span>
-                            <span class="detail-value" id="displayPhone">-</span>
+
+                        <div class="profile-section-card">
+                            <h3 class="section-title">🎓 Education</h3>
+                            <div class="details-list">
+                                <div class="detail-row">
+                                    <span class="label">Major</span>
+                                    <span class="value" id="displayMajor">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Graduation Year</span>
+                                    <span class="value" id="displayGradYear">-</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="detail-item">
-                            <span class="detail-label">🎓 Major / Specialization</span>
-                            <span class="detail-value" id="displayMajor">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">📅 Graduation Year</span>
-                            <span class="detail-value" id="displayGradYear">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">💼 Years of Experience</span>
-                            <span class="detail-value" id="displayExperience">-</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">🏢 Preferred Job Type</span>
-                            <span class="detail-value" id="displayJobType">-</span>
-                        </div>
-                        <div class="detail-item full-width">
-                            <span class="detail-label">📝 About Me</span>
-                            <span class="detail-value" id="displayBio">-</span>
+
+                        <div class="profile-section-card">
+                            <h3 class="section-title">💼 Experience</h3>
+                            <div class="details-list">
+                                <div class="detail-row">
+                                    <span class="label">Total Experience</span>
+                                    <span class="value" id="displayExperience">-</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Profile Edit Form -->
-                <div class="profile-form" id="profileForm">
+                <div class="edit-profile-container" id="profileForm">
+                    <div class="edit-profile-header">
+                        <h2>Edit Your Profile</h2>
+                        <button type="submit" form="profileEditForm" class="btn btn-primary">Save Changes</button>
+                    </div>
                     <form onsubmit="saveProfile(event)">
                         <div class="form-grid">
                             <div class="form-group">

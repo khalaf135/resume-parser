@@ -168,22 +168,34 @@
             const score = skill.score || 0;
 
             return `
-                <div class="skill-card ${verified ? 'verified' : ''}">
-                    <div class="skill-header">
-                        <span class="skill-name">${skill.skill_name}</span>
-                        ${verified ? '<span class="verified-badge">✓ Verified</span>' : ''}
-                    </div>
-                    <div class="skill-score">
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: ${score}%"></div>
+                <div class="skill-modern-card ${verified ? 'verified' : ''}">
+                    <div class="skill-card-body">
+                        <div class="skill-info-header">
+                            <span class="skill-badge-icon">${skill.skill_type === 'technical' ? '💻' : '🧠'}</span>
+                            <div class="skill-name-wrap">
+                                <h3 class="skill-name">${skill.skill_name}</h3>
+                                ${verified ? '<span class="verified-tag">Verified</span>' : '<span class="pending-tag">Unverified</span>'}
+                            </div>
                         </div>
-                        <span class="score-value">${score}%</span>
-                    </div>
-                    <div class="skill-actions">
-                        <button class="btn-sm btn-primary" onclick="startAssessment('${skill.id}', '${skill.skill_name}')">
-                            ${verified ? 'Retake' : 'Take'} Assessment
-                        </button>
-                        <button class="btn-sm btn-danger" onclick="deleteSkill('${skill.id}')">Delete</button>
+                        
+                        <div class="skill-stats">
+                            <div class="score-container">
+                                <div class="score-header">
+                                    <span>Proficiency</span>
+                                    <span class="score-pct">${score}%</span>
+                                </div>
+                                <div class="score-track">
+                                    <div class="score-thumb" style="width: ${score}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="skill-card-actions">
+                            <button class="btn btn-primary btn-sm" onclick="startAssessment('${skill.id}', '${skill.skill_name}')">
+                                ${verified ? 'Retake' : 'Verify Skill'}
+                            </button>
+                            <button class="btn btn-icon-only text-danger" onclick="deleteSkill('${skill.id}')" title="Delete">🗑️</button>
+                        </div>
                     </div>
                 </div>
             `;

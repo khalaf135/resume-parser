@@ -15,75 +15,71 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background-color: #f8fafc;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: #1f2937;
         }
 
         .auth-container {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 50px 40px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
             width: 100%;
             max-width: 440px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
         }
 
         .auth-header {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .auth-header h1 {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #6366f1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #7c3aed;
             margin-bottom: 8px;
         }
 
         .auth-header p {
-            color: rgba(255, 255, 255, 0.5);
+            color: #6b7280;
             font-size: 0.95rem;
         }
 
         .auth-tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 5px;
-            border-radius: 14px;
+            margin-bottom: 24px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 10px;
         }
 
         .auth-tab {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             border: none;
             background: transparent;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.95rem;
+            color: #64748b;
+            font-size: 0.9rem;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .auth-tab.active {
-            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+            background: #ffffff;
+            color: #1f2937;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .auth-tab:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.8);
+            color: #334155;
         }
 
         .form-group {
@@ -92,35 +88,30 @@
 
         .form-group label {
             display: block;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.85rem;
-            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+            font-weight: 600;
             margin-bottom: 8px;
         }
 
         .form-group input {
             width: 100%;
-            padding: 14px 18px;
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            color: white;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #1f2937;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #9333ea;
-            background: rgba(147, 51, 234, 0.08);
-            box-shadow: 0 0 20px rgba(147, 51, 234, 0.15);
+            border-color: #7c3aed;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
         }
 
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Role Selection */
         .role-selection {
             display: none;
             margin-bottom: 24px;
@@ -132,87 +123,80 @@
 
         .role-selection label {
             display: block;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.85rem;
-            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+            font-weight: 600;
             margin-bottom: 12px;
         }
 
         .role-options {
             display: flex;
-            gap: 12px;
-        }
-
-        .role-option {
-            flex: 1;
-            position: relative;
-        }
-
-        .role-option input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .role-card {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 14px 16px;
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .role-card:hover {
-            border-color: rgba(147, 51, 234, 0.5);
-            background: rgba(147, 51, 234, 0.08);
-        }
-
-        .role-option input:checked + .role-card {
-            border-color: #9333ea;
-            background: rgba(147, 51, 234, 0.15);
-        }
-
-        .role-icon {
-            width: 36px;
-            height: 36px;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .role-option:first-child .role-icon {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        .role-option input {
+            position: absolute;
+            opacity: 0;
         }
 
-        .role-option:last-child .role-icon {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        .role-option input:checked+.role-card {
+            border-color: #7c3aed;
+            background: #f5f3ff;
+            box-shadow: 0 0 0 1px #7c3aed;
         }
 
-        .role-info h4 {
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #7c3aed;
             color: white;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 10px;
         }
 
-        .role-info p {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.75rem;
+        .submit-btn:hover {
+            background: #6d28d9;
         }
 
-        /* Password Requirements */
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #7c3aed;
+        }
+
         .password-requirements {
             display: none;
-            margin-top: 10px;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
+            margin-top: 12px;
             font-size: 0.8rem;
         }
 
@@ -221,55 +205,21 @@
         }
 
         .password-requirements li {
-            color: rgba(255, 255, 255, 0.5);
+            color: #94a3b8;
             margin-bottom: 4px;
             list-style: none;
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-
-        .password-requirements li::before {
-            content: '○';
-            font-size: 0.6rem;
+            gap: 8px;
         }
 
         .password-requirements li.valid {
             color: #10b981;
         }
 
-        .password-requirements li.valid::before {
-            content: '✓';
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
         .message {
-            padding: 14px 18px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 0.9rem;
             margin-bottom: 20px;
             display: none;
@@ -277,60 +227,16 @@
 
         .message.error {
             display: block;
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.25);
-            color: #fca5a5;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
 
         .message.success {
             display: block;
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.25);
-            color: #86efac;
-        }
-
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 25px;
-            color: rgba(255, 255, 255, 0.4);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: #9333ea;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2px solid transparent;
-            border-top-color: currentColor;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Decorative elements */
-        .auth-container::before {
-            content: '';
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, transparent 70%);
-            pointer-events: none;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
     </style>
 </head>
@@ -420,13 +326,13 @@
             document.getElementById('loginTab').classList.toggle('active', mode === 'login');
             document.getElementById('registerTab').classList.toggle('active', mode === 'register');
             document.getElementById('btnText').textContent = mode === 'login' ? 'Login' : 'Create Account';
-            
+
             // Show/hide registration-only fields
             document.getElementById('fullNameGroup').style.display = mode === 'register' ? 'block' : 'none';
             document.getElementById('repeatPasswordGroup').style.display = mode === 'register' ? 'block' : 'none';
             document.getElementById('roleSelection').classList.toggle('visible', mode === 'register');
             document.getElementById('passwordReqs').classList.toggle('visible', mode === 'register');
-            
+
             hideMessage();
         }
 
@@ -454,11 +360,11 @@
         }
 
         // Password validation
-        document.getElementById('password').addEventListener('input', function() {
+        document.getElementById('password').addEventListener('input', function () {
             if (currentMode !== 'register') return;
-            
+
             const password = this.value;
-            
+
             document.getElementById('reqLength').classList.toggle('valid', password.length >= 8);
             document.getElementById('reqUpper').classList.toggle('valid', /[A-Z]/.test(password));
             document.getElementById('reqLower').classList.toggle('valid', /[a-z]/.test(password));
@@ -489,7 +395,7 @@
 
             try {
                 const endpoint = currentMode === 'login' ? '/api/auth/login' : '/api/auth/register';
-                const body = currentMode === 'login' 
+                const body = currentMode === 'login'
                     ? { email, password }
                     : { email, password, full_name: fullName, role };
 
@@ -511,7 +417,7 @@
                         }
 
                         showMessage(data.message || 'Success! Redirecting...', 'success');
-                        
+
                         // Redirect based on role
                         const userRole = data.user?.role || 'candidate';
                         setTimeout(() => {

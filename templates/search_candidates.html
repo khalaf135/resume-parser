@@ -211,44 +211,65 @@
                 `${candidates.length} candidate${candidates.length !== 1 ? 's' : ''} found`;
 
             if (!candidates || candidates.length === 0) {
-                document.getElementById('candidatesGrid').innerHTML =
-                    '<p class="empty-state">No candidates match your criteria. Try adjusting the filters.</p>';
+                document.getElementById('candidatesGrid').innerHTML = `
+                    <div class="empty-search-state">
+                        <div class="empty-icon">🔍</div>
+                        <h3>No candidates found</h3>
+                        <p>Try adjusting your filters or search terms to find more talent.</p>
+                    </div>
+                `;
                 return;
             }
 
             document.getElementById('candidatesGrid').innerHTML = candidates.map(candidate => `
-                <div class="candidate-card">
-                    <div class="candidate-avatar">
-                        ${getInitials(candidate.full_name)}
-                    </div>
-                    <div class="candidate-info">
-                        <h3>${candidate.full_name}</h3>
-                        <p class="headline">${candidate.professional_headline || 'No headline'}</p>
-                        <p class="location">📍 ${candidate.location || 'Location not specified'}</p>
-                        <p class="experience">💼 ${candidate.years_of_experience || 'Experience not specified'}</p>
-                        ${candidate.skills && candidate.skills.length > 0 ? `
-                            <div class="candidate-skills">
-                                ${candidate.skills.slice(0, 3).map(s => `
-                                    <span class="skill-badge ${s.is_verified ? 'verified' : ''}">
-                                        ${s.skill_name}
-                                        ${s.is_verified ? '✓' : ''}
-                                    </span>
-                                `).join('')}
-                                ${candidate.skills.length > 3 ? `<span class="skill-badge more">+${candidate.skills.length - 3}</span>` : ''}
+                <div class="candidate-modern-card" onclick="viewCandidate('${candidate.user_id}')">
+                    <div class="candidate-card-content">
+                        <div class="candidate-left">
+                            <div class="candidate-avatar-large">
+                                ${getInitials(candidate.full_name)}
                             </div>
-                        ` : ''}
-                        ${candidate.average_score > 0 ? `
-                            <div class="candidate-score">
-                                <span class="score-label">Avg. Skill Score:</span>
-                                <span class="score-value">${candidate.average_score}%</span>
+                            <div class="candidate-match-score">
+                                <span class="score-num">${candidate.average_score || 0}%</span>
+                                <span class="score-txt">Match</span>
                             </div>
-                        ` : ''}
-                    </div>
-                    <div class="candidate-actions">
-                        <button class="btn-primary" onclick="viewCandidate('${candidate.user_id}')">View Profile</button>
-                        <button class="btn-secondary btn-chat" onclick="startChat('${candidate.user_id}')" title="Coming Soon">
-                            💬 Chat
-                        </button>
+                        </div>
+                        
+                        <div class="candidate-main">
+                            <div class="candidate-header-row">
+                                <h3 class="candidate-name">${candidate.full_name}</h3>
+                                <div class="candidate-badges">
+                                    <span class="badge-tag">${candidate.major_specialization || 'Major'}</span>
+                                    ${candidate.years_of_experience ? `<span class="badge-tag secondary">${candidate.years_of_experience} exp</span>` : ''}
+                                </div>
+                            </div>
+                            
+                            <p class="candidate-headline">${candidate.professional_headline || 'No professional headline provided'}</p>
+                            
+                            <div class="candidate-meta-row">
+                                <span class="meta-item">📍 ${candidate.location || 'Location N/A'}</span>
+                                <span class="meta-item">🎓 Class of ${candidate.graduation_year || 'N/A'}</span>
+                            </div>
+
+                            ${candidate.skills && candidate.skills.length > 0 ? `
+                                <div class="candidate-skills-wrap">
+                                    ${candidate.skills.slice(0, 5).map(s => `
+                                        <span class="skill-tag-pill ${s.is_verified ? 'verified' : ''}">
+                                            ${s.skill_name}
+                                        </span>
+                                    `).join('')}
+                                    ${candidate.skills.length > 5 ? `<span class="skill-tag-pill more">+${candidate.skills.length - 5}</span>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="candidate-right">
+                            <button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation(); viewCandidate('${candidate.user_id}')">
+                                View Profile
+                            </button>
+                            <button class="btn btn-secondary btn-sm btn-full" onclick="event.stopPropagation(); startChat('${candidate.user_id}')">
+                                Message
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');

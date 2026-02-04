@@ -273,24 +273,40 @@
             const grid = document.getElementById('cvsGrid');
 
             if (!cvs || cvs.length === 0) {
-                grid.innerHTML = '<p class="empty-state">No CVs uploaded yet. Upload your first CV!</p>';
+                grid.innerHTML = `
+                    <div class="empty-cv-state">
+                        <div class="empty-icon">📄</div>
+                        <h3>No CVs uploaded yet</h3>
+                        <p>Upload your resume to get instant AI analysis and professional feedback.</p>
+                        <button class="btn btn-primary" onclick="document.getElementById('openUploadBtn').click()">Upload Your First CV</button>
+                    </div>
+                `;
                 return;
             }
 
             grid.innerHTML = cvs.map(cv => `
-                <div class="cv-card ${cv.is_primary ? 'primary' : ''}">
-                    <div class="cv-thumbnail">
-                        <span class="cv-icon">📄</span>
-                        ${cv.is_primary ? '<span class="primary-badge">⭐ Primary</span>' : ''}
+                <div class="cv-modern-card ${cv.is_primary ? 'primary' : ''}">
+                    <div class="cv-card-top">
+                        <div class="cv-type-icon">📄</div>
+                        <div class="cv-meta-info">
+                            <h3 class="cv-title">${cv.title || cv.filename}</h3>
+                            <span class="cv-date">Uploaded on ${new Date(cv.created_at).toLocaleDateString()}</span>
+                        </div>
+                        ${cv.is_primary ? '<span class="label-primary">Primary</span>' : ''}
                     </div>
-                    <div class="cv-info">
-                        <h3>${cv.title || cv.filename}</h3>
-                        <p class="cv-date">Uploaded: ${new Date(cv.created_at).toLocaleDateString()}</p>
-                        ${cv.score ? `<p class="cv-score">Score: <strong>${cv.score}/100</strong></p>` : ''}
+                    
+                    <div class="cv-card-stats">
+                        <div class="cv-stat-item">
+                            <span class="stat-label">AI Score</span>
+                            <div class="cv-score-badge ${cv.score >= 80 ? 'good' : (cv.score >= 50 ? 'average' : 'poor')}">
+                                ${cv.score ? `${cv.score}/100` : 'N/A'}
+                            </div>
+                        </div>
                     </div>
-                    <div class="cv-actions">
-                        <button class="btn-sm btn-secondary" onclick="viewCV('${cv.id}')">View Details</button>
-                        <button class="btn-sm btn-danger" onclick="deleteCV('${cv.id}')">Delete</button>
+
+                    <div class="cv-card-footer">
+                        <button class="btn btn-secondary btn-sm" onclick="viewCV('${cv.id}')">View Analysis</button>
+                        <button class="btn btn-icon-only text-danger" onclick="deleteCV('${cv.id}')" title="Delete">🗑️</button>
                     </div>
                 </div>
             `).join('');

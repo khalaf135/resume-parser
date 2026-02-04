@@ -64,26 +64,51 @@
 
             <div class="dashboard-content">
                 <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <a href="/profile" class="action-card">
-                        <div class="action-icon" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">👤</div>
-                        <div class="action-info">
+                <!-- Quick Actions Grid -->
+                <div class="quick-actions-grid">
+                    <a href="/profile" class="dashboard-box">
+                        <div class="box-icon-container profile-icon">
+                            <span class="box-icon">👤</span>
+                        </div>
+                        <div class="box-info">
                             <h3>View Profile</h3>
                             <p>Update your personal information</p>
                         </div>
                     </a>
-                    <a href="/skills" class="action-card">
-                        <div class="action-icon" style="background: linear-gradient(135deg, #10b981, #059669);">⚡</div>
-                        <div class="action-info">
+                    <a href="/skills" class="dashboard-box">
+                        <div class="box-icon-container skills-icon">
+                            <span class="box-icon">⚡</span>
+                        </div>
+                        <div class="box-info">
                             <h3>Manage Skills</h3>
                             <p>Add and assess your skills</p>
                         </div>
                     </a>
-                    <a href="/cvs" class="action-card">
-                        <div class="action-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📄</div>
-                        <div class="action-info">
+                    <a href="/cvs" class="dashboard-box">
+                        <div class="box-icon-container cvs-icon">
+                            <span class="box-icon">📄</span>
+                        </div>
+                        <div class="box-info">
                             <h3>My CVs</h3>
                             <p>View and manage your CVs</p>
+                        </div>
+                    </a>
+                    <a href="/certificates" class="dashboard-box">
+                        <div class="box-icon-container certs-icon">
+                            <span class="box-icon">📜</span>
+                        </div>
+                        <div class="box-info">
+                            <h3>Certificates</h3>
+                            <p>Manage your certifications</p>
+                        </div>
+                    </a>
+                    <a href="#" class="dashboard-box disabled">
+                        <div class="box-icon-container chats-icon">
+                            <span class="box-icon">💬</span>
+                        </div>
+                        <div class="box-info">
+                            <h3>Messages</h3>
+                            <p>Check employer messages</p>
                         </div>
                     </a>
                 </div>
@@ -112,32 +137,14 @@
                         </div>
                     </div>
 
-                    <!-- Right Column - CTA -->
-                    <div class="dashboard-column">
-                        <div class="cta-card">
+                    <!-- Final CTA Section -->
+                    <div class="dashboard-cta-section">
+                        <div class="cta-inner">
                             <h2>Ready to find your next opportunity?</h2>
                             <p>Complete your profile and generate tailored CVs to match with potential employers.</p>
-                            <div class="cta-buttons">
-                                <a href="/recommendations" class="btn-primary">Get Recommendations</a>
-                                <a href="/profile" class="btn-secondary">Complete Profile</a>
-                            </div>
-                        </div>
-
-                        <!-- Profile Completion -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>📊 Profile Status</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="progress-indicator">
-                                    <div class="progress-bar-horizontal">
-                                        <div class="progress-fill-horizontal" id="profileProgress" style="width: 0%">
-                                        </div>
-                                    </div>
-                                    <span id="profilePercentage">0%</span>
-                                </div>
-                                <p class="progress-hint" id="progressHint">Complete your profile to attract employers
-                                </p>
+                            <div class="cta-actions">
+                                <a href="/recommendations" class="btn btn-primary">Get Recommendations</a>
+                                <a href="/profile" class="btn btn-secondary">Complete Profile</a>
                             </div>
                         </div>
                     </div>
