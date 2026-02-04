@@ -5,8 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jadeer - Connect Talent with Opportunity</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #8b5cf6;
+            --primary-dark: #6d28d9;
+            --secondary: #6366f1;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,10 +32,12 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
-            color: white;
+            background: var(--bg-body);
+            color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* Header */
@@ -27,14 +46,14 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 20px 40px;
+            padding: 20px 48px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            z-index: 100;
-            background: rgba(15, 15, 26, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .logo {
@@ -45,15 +64,17 @@
         }
 
         .logo-icon {
-            font-size: 1.8rem;
+            font-size: 2rem;
         }
 
         .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #9333ea 0%, #6366f1 100%);
+            font-size: 1.75rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.05em;
         }
 
         nav {
@@ -68,285 +89,314 @@
             font-weight: 600;
             font-size: 0.95rem;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-ghost {
             background: transparent;
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-secondary);
         }
 
         .btn-ghost:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary);
+            background: #f1f5f9;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            background: var(--primary);
             color: white;
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
         }
 
         .btn-primary:hover {
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(147, 51, 234, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.4);
         }
 
         /* Hero Section */
         .hero {
-            min-height: 100vh;
+            min-height: 95vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 120px 40px 80px;
+            padding: 180px 24px 100px;
             position: relative;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, transparent 70%);
-            pointer-events: none;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);
         }
 
         .hero-content {
-            max-width: 800px;
+            max-width: 900px;
             position: relative;
-            z-index: 1;
+            z-index: 10;
         }
 
         .hero-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            background: rgba(147, 51, 234, 0.15);
-            border: 1px solid rgba(147, 51, 234, 0.3);
-            border-radius: 50px;
-            color: #a855f7;
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #f5f3ff;
+            border: 1px solid #ddd6fe;
+            border-radius: 99px;
+            color: var(--primary);
             font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 24px;
+            font-weight: 800;
+            margin-bottom: 32px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .hero h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 24px;
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 32px;
+            color: var(--text-primary);
+            letter-spacing: -0.05em;
         }
 
         .hero h1 span {
-            background: linear-gradient(135deg, #9333ea 0%, #6366f1 50%, #10b981 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .hero p {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.6);
-            max-width: 600px;
-            margin: 0 auto 40px;
-            line-height: 1.7;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 48px;
+            line-height: 1.5;
+            font-weight: 400;
         }
 
         .hero-buttons {
             display: flex;
-            gap: 16px;
+            gap: 20px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .btn-large {
-            padding: 16px 36px;
-            font-size: 1.05rem;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            border-radius: 14px;
         }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: white;
+        .btn-white {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
         }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.25);
+        .btn-white:hover {
+            border-color: var(--primary-light);
+            background: #fcfcfd;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         /* Features Section */
         .features {
-            padding: 100px 40px;
-            max-width: 1200px;
+            padding: 120px 24px;
+            max-width: 1260px;
             margin: 0 auto;
         }
 
         .section-header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 80px;
         }
 
         .section-header h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 16px;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            letter-spacing: -0.04em;
         }
 
         .section-header p {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.1rem;
-            max-width: 500px;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            max-width: 600px;
             margin: 0 auto;
         }
 
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
+            gap: 32px;
         }
 
         .feature-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 36px;
-            transition: all 0.3s ease;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 48px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
         }
 
         .feature-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(147, 51, 234, 0.3);
-            transform: translateY(-5px);
+            transform: translateY(-12px);
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-lg);
         }
 
         .feature-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 2.25rem;
+            margin-bottom: 32px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
 
         .feature-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
         }
 
         .feature-card p {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
             line-height: 1.6;
         }
 
         /* Roles Section */
         .roles {
-            padding: 100px 40px;
-            background: rgba(0, 0, 0, 0.2);
+            padding: 140px 24px;
+            background: #ffffff;
+            position: relative;
         }
 
         .roles-container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         .roles-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
+            gap: 48px;
         }
 
         .role-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 48px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 64px 48px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .role-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-5px);
-        }
-
-        .role-card.candidate {
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .role-card.employer {
-            border-color: rgba(245, 158, 11, 0.3);
+            background: #ffffff;
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-lg);
+            transform: scale(1.02);
         }
 
         .role-icon {
-            width: 80px;
-            height: 80px;
+            width: 96px;
+            height: 96px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            margin: 0 auto 24px;
+            font-size: 3rem;
+            margin: 0 auto 32px;
+            background: #ffffff;
+            box-shadow: var(--shadow-md);
         }
 
         .role-card.candidate .role-icon {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, transparent 100%);
+            color: #10b981;
         }
 
         .role-card.employer .role-icon {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, transparent 100%);
+            color: var(--primary);
         }
 
         .role-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 12px;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            letter-spacing: -0.03em;
         }
 
         .role-card p {
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 28px;
-            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-size: 1.15rem;
         }
 
         .role-features {
             text-align: left;
-            margin-bottom: 28px;
+            margin-bottom: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         .role-features li {
-            color: rgba(255, 255, 255, 0.7);
-            padding: 8px 0;
+            color: var(--text-secondary);
             list-style: none;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 14px;
+            font-weight: 500;
         }
 
         .role-features li::before {
             content: '✓';
             color: #10b981;
+            font-weight: 900;
+            font-size: 1.25rem;
         }
 
         /* Footer */
         footer {
-            padding: 60px 40px;
+            padding: 100px 48px;
             text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--bg-body);
+            border-top: 1px solid var(--border-color);
         }
 
         footer p {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
         }
 
         /* Responsive */
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 4rem;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
 
             .features-grid,
             .roles-grid {
@@ -354,15 +404,27 @@
             }
 
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
 
             header {
-                padding: 16px 20px;
+                padding: 16px 24px;
+            }
+
+            .logo-text {
+                font-size: 1.25rem;
             }
 
             .hero {
-                padding: 100px 20px 60px;
+                padding: 140px 24px 64px;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .role-card {
+                padding: 48px 32px;
             }
         }
     </style>
@@ -382,39 +444,40 @@
 
     <section class="hero">
         <div class="hero-content">
-            <span class="hero-badge">✨ AI-Powered Career Platform</span>
+            <span class="hero-badge">✨ Next-Gen Hiring with AI</span>
             <h1>Connect <span>Talent</span> with <span>Opportunity</span></h1>
-            <p>Upload your CV, verify your skills with AI assessments, and get discovered by top employers looking for
-                verified talent.</p>
+            <p>The ultimate AI-powered career platform. Upload your CV, verify your skills with professional
+                assessments, and get discovered by top employers instantly.</p>
             <div class="hero-buttons">
-                <a href="/login#register" class="btn btn-primary btn-large">Get Started Free</a>
-                <a href="#features" class="btn btn-secondary btn-large">Learn More</a>
+                <a href="/login#register" class="btn btn-primary btn-large">Join Jadeer Today</a>
+                <a href="#features" class="btn btn-white btn-large">Explore Features</a>
             </div>
         </div>
     </section>
 
     <section class="features" id="features">
         <div class="section-header">
-            <h2>Why Choose Jadeer?</h2>
-            <p>Everything you need to advance your career or find the perfect candidate</p>
+            <h2>Experience the Future of Hiring</h2>
+            <p>Powerful tools designed to elevate your career or streamline your recruitment workflow.</p>
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">📄</div>
+                <div class="feature-icon" style="background: #f5f3ff; color: var(--primary);">📄</div>
                 <h3>Smart CV Analysis</h3>
-                <p>Our AI analyzes your CV and provides detailed feedback with personalized recommendations to improve
-                    your chances.</p>
+                <p>Our deep-learning AI analyzes your CV and provides surgical feedback with personalized
+                    recommendations to boost your profile score.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);">⚡</div>
+                <div class="feature-icon" style="background: #ecfdf5; color: #10b981;">⚡</div>
                 <h3>Skill Verification</h3>
-                <p>Take AI-generated assessments to verify your skills. Verified badges help you stand out to employers.
-                </p>
+                <p>Take pro-level AI assessments to verify your skills. Verified badges show employers you have the
+                    expertise you claim to have.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🔍</div>
+                <div class="feature-icon" style="background: #fffbeb; color: #f59e0b;">🔍</div>
                 <h3>Smart Matching</h3>
-                <p>Employers can search and filter candidates by skills, experience, and verified competencies.</p>
+                <p>Advanced algorithmic search allows employers to pinpoint talent by verified skills, experience, and
+                    specialization in seconds.</p>
             </div>
         </div>
     </section>
@@ -422,35 +485,31 @@
     <section class="roles" id="roles">
         <div class="roles-container">
             <div class="section-header">
-                <h2>Choose Your Path</h2>
-                <p>Whether you're looking for a job or hiring talent</p>
+                <h2>Tailored for Success</h2>
+                <p>Choose your objective and start your journey with Jadeer today.</p>
             </div>
             <div class="roles-grid">
                 <div class="role-card candidate">
                     <div class="role-icon">👤</div>
                     <h3>For Candidates</h3>
-                    <p>Build your profile, showcase your skills, and connect with employers looking for talent like you.
-                    </p>
+                    <p>Build a powerhouse profile, prove your skills, and let top companies reach out to you.</p>
                     <ul class="role-features">
-                        <li>Upload and manage multiple CVs</li>
-                        <li>Get AI-powered CV recommendations</li>
-                        <li>Verify skills with assessments</li>
-                        <li>Track certificates and achievements</li>
-                        <li>Get discovered by employers</li>
+                        <li>AI-Powered CV Optimization</li>
+                        <li>Verified Skill Assessments</li>
+                        <li>Digital Certificate Management</li>
+                        <li>Real-time Profile Tracking</li>
                     </ul>
                     <a href="/login#register" class="btn btn-primary">Join as Candidate</a>
                 </div>
                 <div class="role-card employer">
                     <div class="role-icon">🏢</div>
                     <h3>For Employers</h3>
-                    <p>Find pre-screened candidates with verified skills and qualifications that match your
-                        requirements.</p>
+                    <p>Access a pool of pre-screened, verified talent ready to make an impact on your business.</p>
                     <ul class="role-features">
-                        <li>Search verified candidates</li>
-                        <li>Filter by skills and experience</li>
-                        <li>View skill assessment scores</li>
-                        <li>Access candidate CVs and profiles</li>
-                        <li>Connect with potential hires</li>
+                        <li>Advanced Talent Sourcing</li>
+                        <li>Skill-Based Candidate Filtering</li>
+                        <li>Verified Competency Matrix</li>
+                        <li>Direct Candidate Messaging</li>
                     </ul>
                     <a href="/login#register" class="btn btn-primary">Join as Employer</a>
                 </div>
@@ -459,7 +518,7 @@
     </section>
 
     <footer>
-        <p>© 2024 Jadeer. Built with ❤️ for connecting talent with opportunity.</p>
+        <p>© 2024 Jadeer. Built with ❤️ for the future of work.</p>
     </footer>
 
     <script>

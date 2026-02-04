@@ -4,9 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Jadeer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Jadeer - Sign In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #8b5cf6;
+            --primary-dark: #6d28d9;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-auth: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,136 +30,152 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f8fafc;
+            background-color: var(--bg-body);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            color: #1f2937;
+            padding: 24px;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
         }
 
         .auth-container {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 40px;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 48px;
             width: 100%;
-            max-width: 440px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
+            max-width: 480px;
+            box-shadow: var(--shadow-auth);
+            border: 1px solid var(--border-color);
         }
 
         .auth-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
 
         .auth-header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #7c3aed;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
             margin-bottom: 8px;
+            letter-spacing: -0.02em;
         }
 
         .auth-header p {
-            color: #6b7280;
-            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         .auth-tabs {
             display: flex;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
             background: #f1f5f9;
-            padding: 4px;
-            border-radius: 10px;
+            padding: 6px;
+            border-radius: 14px;
         }
 
         .auth-tab {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
             background: transparent;
-            color: #64748b;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .auth-tab.active {
             background: #ffffff;
-            color: #1f2937;
+            color: var(--text-primary);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .auth-tab:hover:not(.active) {
-            color: #334155;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group label {
             display: block;
-            color: #374151;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
 
+        /* PREMIUM TEXT BOX STYLE */
         .form-group input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            padding: 14px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             background: #f8fafc;
-            color: #1f2937;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .form-group input:hover {
+            border-color: var(--border-hover);
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #7c3aed;
+            border-color: var(--primary);
             background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
         }
 
         .role-selection {
             display: none;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .role-selection.visible {
             display: block;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .role-selection label {
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .role-selection label.main-label {
             display: block;
-            color: #374151;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 12px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 14px;
         }
 
         .role-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .role-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            background: #ffffff;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
 
         .role-option input {
@@ -152,52 +183,120 @@
             opacity: 0;
         }
 
+        .role-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            padding: 20px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .role-icon {
+            font-size: 1.75rem;
+        }
+
+        .role-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .role-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
         .role-option input:checked+.role-card {
-            border-color: #7c3aed;
+            border-color: var(--primary);
             background: #f5f3ff;
-            box-shadow: 0 0 0 1px #7c3aed;
+            box-shadow: 0 0 0 1px var(--primary);
         }
 
         .submit-btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 10px;
-            background: #7c3aed;
+            border-radius: 12px;
+            background: var(--primary);
             color: white;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 10px;
+            transition: all 0.25s ease;
+            margin-top: 12px;
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
         }
 
         .submit-btn:hover {
-            background: #6d28d9;
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
         }
 
         .submit-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
+            transform: none !important;
         }
 
         .back-link {
             display: block;
             text-align: center;
-            margin-top: 24px;
-            color: #64748b;
+            margin-top: 32px;
+            color: var(--text-muted);
             text-decoration: none;
             font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.2s ease;
         }
 
         .back-link:hover {
-            color: #7c3aed;
+            color: var(--primary);
+        }
+
+        /* Message Styles */
+        .message {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: none;
+            border: 1px solid transparent;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border-color: #bbf7d0;
         }
 
         .password-requirements {
             display: none;
-            margin-top: 12px;
-            font-size: 0.8rem;
+            margin-top: 16px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            font-size: 0.75rem;
         }
 
         .password-requirements.visible {
@@ -205,38 +304,43 @@
         }
 
         .password-requirements li {
-            color: #94a3b8;
-            margin-bottom: 4px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
             list-style: none;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+        }
+
+        .password-requirements li::before {
+            content: '○';
+            font-size: 0.7rem;
         }
 
         .password-requirements li.valid {
             color: #10b981;
         }
 
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            display: none;
+        .password-requirements li.valid::before {
+            content: '●';
         }
 
-        .message.error {
-            display: block;
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
         }
 
-        .message.success {
-            display: block;
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -244,8 +348,8 @@
 <body>
     <div class="auth-container">
         <div class="auth-header">
-            <h1>Welcome to Jadeer</h1>
-            <p>Sign in to your account or create a new one</p>
+            <h1>Jadeer</h1>
+            <p id="authSubtitle">Welcome back! Please enter your details.</p>
         </div>
 
         <div class="auth-tabs">
@@ -258,53 +362,49 @@
         <form id="authForm" onsubmit="handleSubmit(event)">
             <div class="form-group" id="fullNameGroup" style="display: none;">
                 <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" name="fullName" placeholder="Your full name">
+                <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
             </div>
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                <input type="email" id="email" name="email" placeholder="email@company.com" required>
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6">
+
                 <ul class="password-requirements" id="passwordReqs">
-                    <li id="reqLength">Must be at least 8 characters long</li>
-                    <li id="reqUpper">Must include at least 1 uppercase letter (A-Z)</li>
-                    <li id="reqLower">Must include at least 1 lowercase letter (a-z)</li>
-                    <li id="reqNumber">Must include at least 1 number (0-9)</li>
-                    <li id="reqSpecial">Must include at least 1 special character (e.g., !@#$%^&*)</li>
-                    <li id="reqNoSpace">Cannot contain spaces</li>
+                    <li id="reqLength">8+ characters</li>
+                    <li id="reqUpper">Uppercase letter</li>
+                    <li id="reqLower">Lowercase letter</li>
+                    <li id="reqNumber">Number (0-9)</li>
+                    <li id="reqSpecial">Special character</li>
                 </ul>
             </div>
 
             <div class="form-group" id="repeatPasswordGroup" style="display: none;">
-                <label for="repeatPassword">Repeat Password</label>
+                <label for="repeatPassword">Confirm Password</label>
                 <input type="password" id="repeatPassword" name="repeatPassword" placeholder="••••••••">
             </div>
 
             <div class="role-selection" id="roleSelection">
-                <label>I am a:</label>
+                <label class="main-label">Register as a:</label>
                 <div class="role-options">
                     <label class="role-option">
                         <input type="radio" name="role" value="candidate" checked>
                         <div class="role-card">
                             <div class="role-icon">👤</div>
-                            <div class="role-info">
-                                <h4>Candidate</h4>
-                                <p>Looking for a job</p>
-                            </div>
+                            <div class="role-title">Candidate</div>
+                            <div class="role-desc">Searching for jobs</div>
                         </div>
                     </label>
                     <label class="role-option">
                         <input type="radio" name="role" value="employer">
                         <div class="role-card">
                             <div class="role-icon">🏢</div>
-                            <div class="role-info">
-                                <h4>Employer</h4>
-                                <p>Hiring talent</p>
-                            </div>
+                            <div class="role-title">Employer</div>
+                            <div class="role-desc">Hiring top talent</div>
                         </div>
                     </label>
                 </div>
@@ -315,7 +415,7 @@
             </button>
         </form>
 
-        <a href="/" class="back-link">← Back to Home</a>
+        <a href="/" class="back-link">← Return to home</a>
     </div>
 
     <script>
@@ -326,6 +426,9 @@
             document.getElementById('loginTab').classList.toggle('active', mode === 'login');
             document.getElementById('registerTab').classList.toggle('active', mode === 'register');
             document.getElementById('btnText').textContent = mode === 'login' ? 'Login' : 'Create Account';
+            document.getElementById('authSubtitle').textContent = mode === 'login'
+                ? 'Welcome back! Please enter your details.'
+                : 'Join our talent community today.';
 
             // Show/hide registration-only fields
             document.getElementById('fullNameGroup').style.display = mode === 'register' ? 'block' : 'none';
@@ -352,25 +455,22 @@
 
             if (loading) {
                 btn.disabled = true;
-                btnText.innerHTML = '<span class="loading-spinner"></span>Please wait...';
+                btnText.innerHTML = '<span class="loading-spinner"></span>Processing...';
             } else {
                 btn.disabled = false;
                 btnText.textContent = currentMode === 'login' ? 'Login' : 'Create Account';
             }
         }
 
-        // Password validation
+        // Password validation logic
         document.getElementById('password').addEventListener('input', function () {
             if (currentMode !== 'register') return;
-
             const password = this.value;
-
             document.getElementById('reqLength').classList.toggle('valid', password.length >= 8);
             document.getElementById('reqUpper').classList.toggle('valid', /[A-Z]/.test(password));
             document.getElementById('reqLower').classList.toggle('valid', /[a-z]/.test(password));
             document.getElementById('reqNumber').classList.toggle('valid', /[0-9]/.test(password));
             document.getElementById('reqSpecial').classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(password));
-            document.getElementById('reqNoSpace').classList.toggle('valid', !/\s/.test(password));
         });
 
         async function handleSubmit(e) {
@@ -384,13 +484,10 @@
             const repeatPassword = document.getElementById('repeatPassword').value;
             const role = document.querySelector('input[name="role"]:checked')?.value || 'candidate';
 
-            // Validation for registration
-            if (currentMode === 'register') {
-                if (password !== repeatPassword) {
-                    showMessage('Passwords do not match', 'error');
-                    setLoading(false);
-                    return;
-                }
+            if (currentMode === 'register' && password !== repeatPassword) {
+                showMessage('Passwords do not match', 'error');
+                setLoading(false);
+                return;
             }
 
             try {
@@ -408,31 +505,20 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    if (currentMode === 'login' || data.access_token) {
-                        // Store tokens
-                        if (data.access_token) {
-                            localStorage.setItem('access_token', data.access_token);
-                            localStorage.setItem('refresh_token', data.refresh_token);
-                            localStorage.setItem('user', JSON.stringify(data.user));
-                        }
-
-                        showMessage(data.message || 'Success! Redirecting...', 'success');
-
-                        // Redirect based on role
-                        const userRole = data.user?.role || 'candidate';
+                    if (data.access_token) {
+                        localStorage.setItem('access_token', data.access_token);
+                        localStorage.setItem('refresh_token', data.refresh_token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        showMessage('Success! Redirecting...', 'success');
                         setTimeout(() => {
-                            if (userRole === 'employer') {
-                                window.location.href = '/employer/dashboard';
-                            } else {
-                                window.location.href = '/dashboard';
-                            }
+                            window.location.href = data.user.role === 'employer' ? '/employer/dashboard' : '/dashboard';
                         }, 1000);
                     } else {
-                        showMessage(data.message || 'Registration successful! Please check your email to verify, then login.', 'success');
-                        setTimeout(() => switchTab('login'), 2000);
+                        showMessage('Account created! Please check your email.', 'success');
+                        setTimeout(() => switchTab('login'), 2500);
                     }
                 } else {
-                    showMessage(data.error || 'An error occurred', 'error');
+                    showMessage(data.error || 'Authentication failed', 'error');
                 }
             } catch (error) {
                 showMessage('Network error. Please try again.', 'error');
@@ -441,20 +527,12 @@
             }
         }
 
-        // Check if already logged in
         if (localStorage.getItem('access_token')) {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (user.role === 'employer') {
-                window.location.href = '/employer/dashboard';
-            } else {
-                window.location.href = '/dashboard';
-            }
+            window.location.href = user.role === 'employer' ? '/employer/dashboard' : '/dashboard';
         }
 
-        // Auto-switch to register tab if hash is #register
-        if (window.location.hash === '#register') {
-            switchTab('register');
-        }
+        if (window.location.hash === '#register') switchTab('register');
     </script>
 </body>
 

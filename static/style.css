@@ -25,8 +25,11 @@
     --text-muted: #9ca3af;
     --text-on-primary: #ffffff;
 
-    --border-color: #e5e7eb;
-    --border-hover: #d1d5db;
+    --border-color: #e2e8f0;
+    --border-hover: #cbd5e1;
+    --bg-input: #f8fafc;
+    --bg-input-focus: #ffffff;
+    --shadow-input-focus: 0 0 0 4px rgba(124, 58, 237, 0.12);
 
     /* Spacing */
     --sidebar-width: 280px;
@@ -700,22 +703,35 @@ body {
 .form-group label {
     display: block;
     color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 12px 16px;
+    padding: 14px 18px;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: 12px;
     background: var(--bg-input);
     color: var(--text-primary);
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+    border-color: var(--border-hover);
 }
 
 .form-group input:focus,
@@ -723,13 +739,8 @@ body {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary);
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-    color: var(--text-muted);
+    background: var(--bg-input-focus);
+    box-shadow: var(--shadow-input-focus);
 }
 
 .form-group select option {
@@ -1192,28 +1203,33 @@ body {
 
 .filter-group label {
     display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     color: var(--text-secondary);
     margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 .filter-group select,
 .filter-group input {
     width: 100%;
-    padding: 10px 14px;
+    padding: 12px 16px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 10px;
+    background: var(--bg-input);
+    font-size: 0.95rem;
     color: var(--text-primary);
-    transition: all 0.2s;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .filter-group select:focus,
 .filter-group input:focus {
-    border-color: var(--primary);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    border-color: var(--primary);
+    background: var(--bg-input-focus);
+    box-shadow: var(--shadow-input-focus);
 }
 
 .search-results {
